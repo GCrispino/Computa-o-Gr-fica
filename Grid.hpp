@@ -31,11 +31,13 @@ class Grid{
 
 		const Quadrado & getQuadrado(int xGrid, int yGrid);
 
+		static std::pair<int, int> getPontoYMin(const std::pair<std::pair<int, int>, std::pair<int, int>> &lado);
+		static std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
+		std::vector<std::pair<int, int>> preenchimentoVarredura(const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
 
 		static void troca(int &, int &);
 		static std::stack<TrocaReflexao> reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2);
 		static void reflexaoInversa(std::stack<TrocaReflexao> tiposTroca,int &x, int &y);
-		static std::vector< std::pair<int,int> > bresenham(int x1, int y1,int x2, int y2);
-
+		static std::vector<std::pair<int, int>> bresenham(int x1, int y1, int x2, int y2);
 };
 
