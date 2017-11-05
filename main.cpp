@@ -36,6 +36,12 @@ void display(void)
 }
 
 void apertaTecla(unsigned char key, int x, int y){
+
+	if (key == 'c'){
+		grid->limpa();
+		return;
+	}
+
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
 
@@ -46,10 +52,10 @@ void apertaTecla(unsigned char key, int x, int y){
 		}
 	}
 
-
 	if (modo != key){
 		modo = key;
 		quadradosSelecionados.clear();
+		lados.clear();
 	}
 
 }

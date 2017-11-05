@@ -26,12 +26,13 @@ class Grid{
 		void pintaQuadrado(const Quadrado &);
 		void pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto);
 		void pintaFrameBuffer(double cor[],int x,int y);
+		void limpa();
 		
 		int * mapCoordenadaGridParaReal(int x, int y);
 		int * mapCoordenadaRealParaGrid(int x, int y);
 
 
-		const Quadrado & getQuadrado(int xGrid, int yGrid);
+		Quadrado & getQuadrado(int xGrid, int yGrid);
 
 		static std::pair<int, int> getPontoYMin(const std::pair<std::pair<int, int>, std::pair<int, int>> &lado);
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> 

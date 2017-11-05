@@ -8,8 +8,6 @@
 //AJEITAR pintaQuadrado -> PODE SER REDUZIDA
 //FUNÇÃO criaLinhaQuadrado PODE RETORNAR LINHA
 //ADICIONAR CHECAGEM SE PONTO FORA DO GRID FOR ACESSADO
-//FAZER FUNÇÃO pintaLinha()
-//antes do algoritmo de preenchimento, pintar os lados usando bresenham
 
 Grid::Grid(int altura, int largura,int tamanhoQuadrados,int xInicial,int yInicial,double corLinha[3])
 :altura(altura),largura(largura),tamanhoQuadrados(tamanhoQuadrados),xInicial(xInicial),yInicial(yInicial){
@@ -18,7 +16,6 @@ Grid::Grid(int altura, int largura,int tamanhoQuadrados,int xInicial,int yInicia
 	this->corLinha[2] = corLinha[2];
 
 	//Inicialização do frame buffer
-	// for (auto &linha: this->frameBuffer)
 	for (unsigned int i = 0;i < this->largura;++i){
 		std::vector< std::vector<double> > linha;
 		for (unsigned int j = 0;j < this->altura;++j)
@@ -99,10 +96,28 @@ void Grid::pintaFrameBuffer(double cor[],int x,int y){
 	this->frameBuffer[x][y][2] = cor[2];
 }
 
+void Grid::limpa(){
+	double preto[] = {0.0,0.0,0.0};
 
-const Quadrado & Grid::getQuadrado(int xGrid, int yGrid){
+	for (unsigned int x = 0;x < this->largura / this->tamanhoQuadrados;++x)
+		for (unsigned int y = 0;y < this->altura / this->tamanhoQuadrados;++y)
+			if (!this->mesmaCor(preto,this->frameBuffer[x][y].data())){
+				Quadrado &q = this->getQuadrado(x,y);
+				//muda a cor do quadrado para preto apenas para pintar de volta para preto
+				q.setCor(preto);
+				q.pinta();
+				//depois volta para a cor que estava antes
+				q.setCor(this->corLinha);
+
+				this->pintaFrameBuffer(preto,x,y);
+			}
+
+}
+
+Quadrado & Grid::getQuadrado(int xGrid, int yGrid){
 	return this->quadrados[xGrid][yGrid];
 }
+
 
 void Grid::troca(int &x, int &y){
 	int aux = x;
