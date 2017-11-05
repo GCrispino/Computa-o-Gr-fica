@@ -39,9 +39,11 @@ void apertaTecla(unsigned char key, int x, int y){
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
 
-		grid->preenchimentoVarredura(lados);
-		std::cout << "Terminou de preencher!" << std::endl;
-		lados.clear();
+		if (!lados.empty()){
+			grid->preenchimentoVarredura(lados);
+			std::cout << "Terminou de preencher!" << std::endl;
+			lados.clear();
+		}
 	}
 
 

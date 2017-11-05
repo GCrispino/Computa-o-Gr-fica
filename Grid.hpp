@@ -1,4 +1,5 @@
 #include <vector>
+#include <map>
 #include <stack>
 #include "Quadrado.hpp"
 
@@ -33,7 +34,8 @@ class Grid{
 		const Quadrado & getQuadrado(int xGrid, int yGrid);
 
 		static std::pair<int, int> getPontoYMin(const std::pair<std::pair<int, int>, std::pair<int, int>> &lado);
-		static std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
+		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> 
+			getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados, std::map<std::pair<int, int>, bool> &ladosMinMax);
 		void preenchimentoVarredura(const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
 		void preenchimentoRecursivo(int x, int y, double * corPonto,double * corAresta);
 

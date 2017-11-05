@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 #include <algorithm>
 #include <GL/glut.h>
 #include "Grid.hpp"
@@ -219,36 +220,69 @@ std::pair<int, int> Grid::getPontoYMin(const std::pair<std::pair<int, int>, std:
 		return p2;
 }
 
-std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> Grid::getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados){
+std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>>
+	Grid::getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados, std::map<std::pair<int, int>, bool> &ladosMinMax)
+{
 	std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> ladosInterseccaoPonto;
 
+	int yMinGlobal = (this->altura / this->tamanhoQuadrados) + 1, yMaxGlobal = 0,
+		xYMinGlobal,xYMaxGlobal;
+
+	std::cout << "yMinGlobal inicial: " << yMinGlobal << std::endl;
+	std::cout << "yMaxGlobal inicial: " << yMaxGlobal << std::endl;
+
 	for (const std::pair<std::pair<int, int>, std::pair<int, int>> &lado : lados){
-		int yMin,yMax;
+		int yMin,yMax,xYMin,xYMax;
 
 		if (lado.first.second < lado.second.second){
 			yMin = lado.first.second;
+			xYMin = lado.first.first;
 			yMax = lado.second.second;
+			xYMax = lado.second.first;
 		}
 		else{
 			yMin = lado.second.second;
+			xYMin = lado.second.first;
 			yMax = lado.first.second;
+			xYMax = lado.first.first;
+		}
+
+		if (yMin < yMinGlobal){
+			yMinGlobal = yMin;
+			xYMinGlobal = xYMin;
+		}
+
+		if (yMax < yMaxGlobal){
+			yMaxGlobal = yMax;
+			xYMaxGlobal = xYMax;
 		}
 
 		if (yMin <= yVarredura && yVarredura <= yMax)
 			ladosInterseccaoPonto.push_back(lado);
 	}
 
+	ladosMinMax[std::make_pair(xYMinGlobal,yMinGlobal)] = true;
+	ladosMinMax[std::make_pair(xYMaxGlobal,yMaxGlobal)] = true;
+
+
 	return ladosInterseccaoPonto;
 }
 
 void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > &lados){
+	//Obtém os pontos das arestas que serão usados no preechimento depois
 	std::vector<std::pair<int, int>> pontosParaPintar;
 
 	int yMax = Grid::mapCoordenadaRealParaGrid(0,this->altura)[1];
-
+	std::map<std::pair<int,int>,bool> ladosMinMax; //retorna true se o ponto usado como chave é um máximo ou mínimo
+	
 	for (int yVarredura = 0; yVarredura < yMax; ++yVarredura){
+
 		//obtém lados que possuem interseccao com o ponto atual
-		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> ladosInterseccaoPonto = this->getLados(yVarredura, lados);
+		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> ladosInterseccaoPonto = this->getLados(yVarredura, lados,ladosMinMax);
+
+		std::cout << "LadosMinMax: " << std::endl;
+		for (const auto & ponto: ladosMinMax)
+			std::cout <<"Ponto: " << ponto.first.first << ',' << ponto.first.second << std::endl;
 
 		std::cout << "Y varredura: " << yVarredura << std::endl;
 		std::cout << "Pontos de intersecção: " << std::endl;
@@ -259,8 +293,10 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 				y1 = lado.first.second, y2 = lado.second.second, yMin = pontoYMin.second;
 			double m = (double)(y2 - y1) / (x2 - x1);
 
-			if (m == 0)//ignora se lado for horizontal
+			//se lado for horizontal(m == 0), não guarda os pontos referentes a ele e pinta os seus pontos que podem não estar pintados
+			if (m == 0){
 				continue;
+			}
 
 			int xInterseccao = (1 / m) *  (yVarredura - yMin) + xYMin;
 			std::cout << "\tx1 = " << x1 << " y1 = " << y1 << ", x2 = " << x2 << ", y2 = " << y2 << std::endl;
@@ -288,14 +324,14 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 		return y1 < y2;
 	});
 
+
+	//Preenche a figura a partir dos pontos obtidos
 	int yAtual = pontosParaPintar[0].second;
 	std::vector<int> coordenadasX_YAtual;
 
-	for (unsigned int i = 0; i < pontosParaPintar.size(); ++i)
-	{
+	for (unsigned int i = 0; i < pontosParaPintar.size(); ++i){
 		std::cout << "i - Ponto atual: " << pontosParaPintar[i].first << ',' << pontosParaPintar[i].second << std::endl;
-		if (pontosParaPintar[i].second != yAtual || i == pontosParaPintar.size() - 1)
-		{
+		if (pontosParaPintar[i].second != yAtual || i == pontosParaPintar.size() - 1){
 			if (i == pontosParaPintar.size() - 1)
 				coordenadasX_YAtual.push_back(pontosParaPintar[i].first);
 
@@ -311,24 +347,27 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 			std::cout << "\txFinal: " << xFinal << std::endl;
 
 			bool dentro = false;
-			std::cout << "pontosParaPintar: " << std::endl;
+			std::cout << "pontos: " << std::endl;
+
 			//pinta de xInicial até xFinal
 			//começa pintando xInicial e xFinal
-			//PINTAR FRAMEBUFFER AQUI!
 			this->pintaQuadrado(xInicial, yAtual);
 			this->pintaFrameBuffer(this->corLinha,xInicial,yAtual);
 			this->pintaQuadrado(xFinal, yAtual);
 			this->pintaFrameBuffer(this->corLinha,xFinal,yAtual);
 
-			for (unsigned int x = xInicial; x <= xFinal; ++x)
-			{
+			for (unsigned int x = xInicial; x <= xFinal; ++x){
 				//checa se coordenada x atual pertence ao vector coordenadasX_YAtual
 				std::cout << "x atual = " << x << std::endl;
 				std::cout << dentro << std::endl;
-				//checa se número de ocorrências do x examinado é ímpar.
-				//Se for, modifica o estado da variável 'dentro'
-				if (std::count(coordenadasX_YAtual.begin(), coordenadasX_YAtual.end(), x) % 2 != 0)
+				
+				//OU se número de ocorrências do x examinado é ímpar.
+				bool isPontoMaxMin = ladosMinMax[std::make_pair(x,yAtual)]; //falta ajeitar isso - indica se ponto é máximo ou mínimo
+				const int nOcorrenciasPonto = std::count(coordenadasX_YAtual.begin(), coordenadasX_YAtual.end(), x);
+				if ((nOcorrenciasPonto == 2 && !isPontoMaxMin) || nOcorrenciasPonto % 2 != 0){
+					//Se for, modifica o estado da variável 'dentro'
 					dentro = !dentro;
+				}
 				else
 					std::cout << "\tponto : " << x << ',' << yAtual << std::endl;
 
@@ -347,9 +386,8 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 	}
 
 	std::cout << std::endl;
-	std::cout << "Numero de pontosParaPintar de interseccao: " << pontosParaPintar.size() << std::endl;
+	std::cout << "Numero de pontos de interseccao: " << pontosParaPintar.size() << std::endl;
 
-	// return pontosParaPintar;
 }
 
 void Grid::preenchimentoRecursivo(int x, int y, double *corPonto, double *corAresta){
