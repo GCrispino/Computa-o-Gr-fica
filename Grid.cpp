@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include "Grid.hpp"
 
+//AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]
 //AJEITAR pintaQuadrado -> PODE SER REDUZIDA
 //FUNÇÃO criaLinhaQuadrado PODE RETORNAR LINHA
 //ADICIONAR CHECAGEM SE PONTO FORA DO GRID FOR ACESSADO
@@ -26,7 +27,6 @@ Grid::Grid(int altura, int largura,int tamanhoQuadrados,int xInicial,int yInicia
 
 	for (int xGrid = 0,xReal = this->yInicial;xReal + this->tamanhoQuadrados < this->altura;xReal += this->tamanhoQuadrados,++xGrid){
 		std::vector<Quadrado> linha;
-		// this->quadrados.push_back(this->criaLinhaQuadrados(xGrid,xReal));
 		this->quadrados.push_back(linha);
 		this->criaLinhaQuadrados(xGrid,xReal);
 	}
@@ -60,6 +60,38 @@ void Grid::pintaQuadrado(const Quadrado &q){
 	q.pinta();
 }
 
+void Grid::pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto){
+	std::vector<std::pair<int, int>> pontos;
+	TrocaReflexao tipoTroca;
+	std::stack<TrocaReflexao> tiposTroca;
+
+	std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
+	std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
+	std::cout << std::endl;
+
+	tiposTroca = Grid::reflexao(primeiroPonto, segundoPonto);
+	pontos = Grid::bresenham(primeiroPonto.first, primeiroPonto.second, segundoPonto.first, segundoPonto.second);
+
+	std::cout << "Depois da reflexão: " << std::endl;
+	std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
+	std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
+	std::cout << std::endl;
+
+	std::cout << "Depois da reflexão inversa: ";
+	//reflete cada ponto e os pinta
+	for (unsigned int i = 0; i < pontos.size(); ++i)
+	{
+		std::pair<int, int> &ponto = pontos[i];
+		Grid::reflexaoInversa(tiposTroca, ponto.first, ponto.second);
+		std::cout << "Ponto: " << ponto.first << ',' << ponto.second << " ";
+		this->pintaQuadrado(ponto.first, ponto.second);
+
+		this->pintaFrameBuffer(this->corLinha, ponto.first, ponto.second);
+	}
+	std::cout << std::endl
+			  << std::endl;
+}
+
 void Grid::pintaFrameBuffer(double cor[],int x,int y){
 	this->frameBuffer[x][y][0] = cor[0];
 	this->frameBuffer[x][y][1] = cor[1];
@@ -75,6 +107,10 @@ void Grid::troca(int &x, int &y){
 	int aux = x;
 	x = y;
 	y = aux;
+}
+
+bool Grid::mesmaCor(double *c1, double *c2){
+	return c1[0] == c2[0] && c1[1] == c2[1] && c1[2] == c2[2];
 }
 
 std::stack<TrocaReflexao> Grid::reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2){
@@ -205,7 +241,7 @@ std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> Grid::getLados(
 	return ladosInterseccaoPonto;
 }
 
-std::vector<std::pair<int, int>> Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > &lados){
+void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, int>, std::pair<int, int> > > &lados){
 	std::vector<std::pair<int, int>> pontosParaPintar;
 
 	int yMax = Grid::mapCoordenadaRealParaGrid(0,this->altura)[1];
@@ -252,5 +288,92 @@ std::vector<std::pair<int, int>> Grid::preenchimentoVarredura(const std::vector<
 		return y1 < y2;
 	});
 
-	return pontosParaPintar;
+	int yAtual = pontosParaPintar[0].second;
+	std::vector<int> coordenadasX_YAtual;
+
+	for (unsigned int i = 0; i < pontosParaPintar.size(); ++i)
+	{
+		std::cout << "i - Ponto atual: " << pontosParaPintar[i].first << ',' << pontosParaPintar[i].second << std::endl;
+		if (pontosParaPintar[i].second != yAtual || i == pontosParaPintar.size() - 1)
+		{
+			if (i == pontosParaPintar.size() - 1)
+				coordenadasX_YAtual.push_back(pontosParaPintar[i].first);
+
+			std::cout << "Entrou! yAtual = " << yAtual << ", novo y = " << pontosParaPintar[i].second << std::endl;
+
+			// const std::pair<int,int> &p1 = pontosParaPintar[i],&p2 = pontosParaPintar[i + npontosParaPintarY];
+			const int xInicial = coordenadasX_YAtual[0], xFinal = coordenadasX_YAtual.back();
+			// unsigned int y = pInicial.second;
+
+			// std::cout << "\tponto 1: " << pInicial.first << ',' << pInicial.second << std::endl;
+			// std::cout << "\tponto 2: " << p2.first << ',' << p2.second << std::endl;
+			std::cout << "\txInicial: " << xInicial << std::endl;
+			std::cout << "\txFinal: " << xFinal << std::endl;
+
+			bool dentro = false;
+			std::cout << "pontosParaPintar: " << std::endl;
+			//pinta de xInicial até xFinal
+			//começa pintando xInicial e xFinal
+			//PINTAR FRAMEBUFFER AQUI!
+			this->pintaQuadrado(xInicial, yAtual);
+			this->pintaFrameBuffer(this->corLinha,xInicial,yAtual);
+			this->pintaQuadrado(xFinal, yAtual);
+			this->pintaFrameBuffer(this->corLinha,xFinal,yAtual);
+
+			for (unsigned int x = xInicial; x <= xFinal; ++x)
+			{
+				//checa se coordenada x atual pertence ao vector coordenadasX_YAtual
+				std::cout << "x atual = " << x << std::endl;
+				std::cout << dentro << std::endl;
+				//checa se número de ocorrências do x examinado é ímpar.
+				//Se for, modifica o estado da variável 'dentro'
+				if (std::count(coordenadasX_YAtual.begin(), coordenadasX_YAtual.end(), x) % 2 != 0)
+					dentro = !dentro;
+				else
+					std::cout << "\tponto : " << x << ',' << yAtual << std::endl;
+
+				if (dentro){
+					this->pintaQuadrado(x, yAtual);
+					this->pintaFrameBuffer(this->corLinha,x,yAtual);
+				}
+			}
+
+			//limpa o vector e atualiza o valor do yAtual
+			coordenadasX_YAtual.clear();
+			yAtual = pontosParaPintar[i].second;
+		}
+
+		coordenadasX_YAtual.push_back(pontosParaPintar[i].first);
+	}
+
+	std::cout << std::endl;
+	std::cout << "Numero de pontosParaPintar de interseccao: " << pontosParaPintar.size() << std::endl;
+
+	// return pontosParaPintar;
+}
+
+void Grid::preenchimentoRecursivo(int x, int y, double *corPonto, double *corAresta){
+	// std::cout << "Preenchimento recursivo: " << x << ',' << y << std::endl;
+	//se não tiver pintado com uma das cores, pinta
+	//pinta o restante
+
+	if (x > (this->largura / this->tamanhoQuadrados) || x < 0 || y > (this->altura / this->tamanhoQuadrados) || y < 0){
+		// std::cout << "Vai acabar!" << std::endl;
+		return ;
+	}
+
+	if (
+		!mesmaCor(this->frameBuffer[x][y].data(), corPonto) && !mesmaCor(this->frameBuffer[x][y].data(), corAresta)
+		&& x < (this->largura / this->tamanhoQuadrados) && x >= 0 && y < (this->altura / this->tamanhoQuadrados) && y >= 0
+	){
+		// std::cout << "Pinta!" << std::endl;
+		this->pintaFrameBuffer(corPonto,x,y);
+		this->pintaQuadrado(x,y);
+		
+
+		this->preenchimentoRecursivo(x + 1,y,corPonto,corAresta);
+		this->preenchimentoRecursivo(x,y + 1,corPonto,corAresta);
+		this->preenchimentoRecursivo(x - 1,y,corPonto,corAresta);
+		this->preenchimentoRecursivo(x,y - 1,corPonto,corAresta);
+	}
 }
