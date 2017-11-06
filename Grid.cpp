@@ -90,7 +90,7 @@ void Grid::pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &s
 			  << std::endl;
 }
 
-void Grid::pintaFrameBuffer(double cor[],int x,int y){
+void Grid::pintaFrameBuffer(const double cor[],int x,int y){
 	this->frameBuffer[x][y][0] = cor[0];
 	this->frameBuffer[x][y][1] = cor[1];
 	this->frameBuffer[x][y][2] = cor[2];
@@ -118,6 +118,9 @@ Quadrado & Grid::getQuadrado(int xGrid, int yGrid){
 	return this->quadrados[xGrid][yGrid];
 }
 
+const std::vector<double> Grid::getCorFrameBuffer(int x, int y){
+	return this->frameBuffer[x][y];
+}
 
 void Grid::troca(int &x, int &y){
 	int aux = x;
@@ -125,7 +128,7 @@ void Grid::troca(int &x, int &y){
 	y = aux;
 }
 
-bool Grid::mesmaCor(double *c1, double *c2){
+bool Grid::mesmaCor(const double *c1,const double *c2){
 	return c1[0] == c2[0] && c1[1] == c2[1] && c1[2] == c2[2];
 }
 
@@ -267,7 +270,7 @@ std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>>
 			xYMinGlobal = xYMin;
 		}
 
-		if (yMax < yMaxGlobal){
+		if (yMax > yMaxGlobal){
 			yMaxGlobal = yMax;
 			xYMaxGlobal = xYMax;
 		}
@@ -295,7 +298,7 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 		//obtém lados que possuem interseccao com o ponto atual
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> ladosInterseccaoPonto = this->getLados(yVarredura, lados,ladosMinMax);
 
-		std::cout << "LadosMinMax: " << std::endl;
+		std::cout << "LadosMinMax: " << ladosMinMax.size() << std::endl;
 		for (const auto & ponto: ladosMinMax)
 			std::cout <<"Ponto: " << ponto.first.first << ',' << ponto.first.second << std::endl;
 
@@ -405,28 +408,25 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 
 }
 
-void Grid::preenchimentoRecursivo(int x, int y, double *corPonto, double *corAresta){
-	// std::cout << "Preenchimento recursivo: " << x << ',' << y << std::endl;
-	//se não tiver pintado com uma das cores, pinta
-	//pinta o restante
-
+void Grid::preenchimentoRecursivo(int x, int y,const double *corPonto,const double *corInicial){
 	if (x > (this->largura / this->tamanhoQuadrados) || x < 0 || y > (this->altura / this->tamanhoQuadrados) || y < 0){
 		// std::cout << "Vai acabar!" << std::endl;
 		return ;
 	}
-
+	
+	//se não tiver pintado com uma das cores, pinta
 	if (
-		!mesmaCor(this->frameBuffer[x][y].data(), corPonto) && !mesmaCor(this->frameBuffer[x][y].data(), corAresta)
+		mesmaCor(this->frameBuffer[x][y].data(), corInicial)
 		&& x < (this->largura / this->tamanhoQuadrados) && x >= 0 && y < (this->altura / this->tamanhoQuadrados) && y >= 0
 	){
-		// std::cout << "Pinta!" << std::endl;
+		//pinta o restante
 		this->pintaFrameBuffer(corPonto,x,y);
 		this->pintaQuadrado(x,y);
 		
 
-		this->preenchimentoRecursivo(x + 1,y,corPonto,corAresta);
-		this->preenchimentoRecursivo(x,y + 1,corPonto,corAresta);
-		this->preenchimentoRecursivo(x - 1,y,corPonto,corAresta);
-		this->preenchimentoRecursivo(x,y - 1,corPonto,corAresta);
+		this->preenchimentoRecursivo(x + 1,y,corPonto,corInicial);
+		this->preenchimentoRecursivo(x,y + 1,corPonto,corInicial);
+		this->preenchimentoRecursivo(x - 1,y,corPonto,corInicial);
+		this->preenchimentoRecursivo(x,y - 1,corPonto,corInicial);
 	}
 }

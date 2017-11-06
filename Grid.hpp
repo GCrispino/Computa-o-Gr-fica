@@ -25,7 +25,7 @@ class Grid{
 		void pintaQuadrado(int xGrid, int yGrid);
 		void pintaQuadrado(const Quadrado &);
 		void pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto);
-		void pintaFrameBuffer(double cor[],int x,int y);
+		void pintaFrameBuffer(const double cor[],int x,int y);
 		void limpa();
 		
 		int * mapCoordenadaGridParaReal(int x, int y);
@@ -33,15 +33,16 @@ class Grid{
 
 
 		Quadrado & getQuadrado(int xGrid, int yGrid);
+		const std::vector<double> getCorFrameBuffer(int x, int y);
 
 		static std::pair<int, int> getPontoYMin(const std::pair<std::pair<int, int>, std::pair<int, int>> &lado);
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> 
 			getLados(int yVarredura, const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados, std::map<std::pair<int, int>, bool> &ladosMinMax);
 		void preenchimentoVarredura(const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
-		void preenchimentoRecursivo(int x, int y, double * corPonto,double * corAresta);
+		void preenchimentoRecursivo(int x, int y, const double * corPonto,const double * corInicial);
 
 		static void troca(int &, int &);
-		static bool mesmaCor(double *,double *);
+		static bool mesmaCor(const double *,const double *);
 		static std::stack<TrocaReflexao> reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2);
 		static void reflexaoInversa(std::stack<TrocaReflexao> tiposTroca,int &x, int &y);
 		static std::vector<std::pair<int, int>> bresenham(int x1, int y1, int x2, int y2);

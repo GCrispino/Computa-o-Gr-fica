@@ -68,7 +68,9 @@ void mouse(int btn, int state , int x , int y){
 			std::cout << "Cor ponto:  " << corPonto[0] << ',' << corPonto[1] << ',' << corPonto[2] << std::endl;
 
 			int *coordenadasGrid = grid->mapCoordenadaRealParaGrid(x, y);
-			grid->preenchimentoRecursivo(coordenadasGrid[0], coordenadasGrid[1], corPonto, corPonto);
+			int xGrid = coordenadasGrid[0], yGrid = coordenadasGrid[1];
+			std::cout <<"COR" << grid->getCorFrameBuffer(xGrid,yGrid).data()[0] << std::endl;
+			grid->preenchimentoRecursivo(xGrid, yGrid , corPonto, grid->getCorFrameBuffer(xGrid,yGrid).data());
 			return;
 		}
 
