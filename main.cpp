@@ -11,18 +11,6 @@
 #define ESPACO_GRID 5
 #define TAMANHO_QUADRADO 30
 
-/**
- * Recorte: 
- *  - Salvar os lados desenhados em um array - FEITO
- * 		- std::vector<std::pair<std::pair<int,int>,std::pair<int,int>>>
- *  - Criar modo (número 4, pode ser) para aceitar input de pontos da janela e fazer o recorte das linhas desenhadas
- * 		- Receber input dos pontos da janela(ponto superior esquerdo e ponto inferior direito) - FEITO
- * 		- Desenhar janela - FEITO
- * 		- Para cada lado salvo no array, aplicá-lo na função de recorte
- * 		- Se os pontos retornados pela função forem diferentes dos passados, apagar as linhas e depois 
- * 				desenhá-las com os pontos atualizados utilizando bresenham
- */
-
 
 double corPonto[] = {1.0,0.0,0.0};
 Grid *grid;
