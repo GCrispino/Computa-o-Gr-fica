@@ -50,14 +50,21 @@ void display(void)
 	glFlush();
 }
 
+void limpaVariaveisGlobiais(bool limpaGrid){
+	janela = false;
+
+	if (limpaGrid)
+		grid->limpa();
+
+	quadradosSelecionados.clear();
+	lados.clear();
+	pontosJanela.clear();	
+}
+
 void apertaTecla(unsigned char key, int x, int y){
 
-	if (key == 'c'){
-		grid->limpa();
-		quadradosSelecionados.clear();
-		lados.clear();
-		return;
-	}
+	if (key == 'c')
+		return limpaVariaveisGlobiais(true);
 
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
@@ -70,17 +77,14 @@ void apertaTecla(unsigned char key, int x, int y){
 	}
 
 	if (modo != key){
-		if (modo == '4')
-			lados.clear();
-
 		modo = key;
-		quadradosSelecionados.clear();
+
+		limpaVariaveisGlobiais(false);
 	}
 
 }
 
 void mouse(int btn, int state , int x , int y){
-
 
 	if (state == GLUT_DOWN){
 
