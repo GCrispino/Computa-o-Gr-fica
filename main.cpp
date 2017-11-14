@@ -38,14 +38,21 @@ void display(void)
 	glFlush();
 }
 
+void limpaVariaveisGlobiais(bool limpaGrid){
+	janela = false;
+
+	if (limpaGrid)
+		grid->limpa();
+
+	quadradosSelecionados.clear();
+	lados.clear();
+	pontosJanela.clear();	
+}
+
 void apertaTecla(unsigned char key, int x, int y){
 
-	if (key == 'c'){
-		grid->limpa();
-		quadradosSelecionados.clear();
-		lados.clear();
-		return;
-	}
+	if (key == 'c')
+		return limpaVariaveisGlobiais(true);
 
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
@@ -58,17 +65,14 @@ void apertaTecla(unsigned char key, int x, int y){
 	}
 
 	if (modo != key){
-		if (modo == '4')
-			lados.clear();
-
 		modo = key;
-		quadradosSelecionados.clear();
+
+		limpaVariaveisGlobiais(false);
 	}
 
 }
 
 void mouse(int btn, int state , int x , int y){
-
 
 	if (state == GLUT_DOWN){
 
@@ -141,7 +145,8 @@ void mouse(int btn, int state , int x , int y){
 					std::pair<int, int> p1 = pontosJanela[0],
 										p2 = pontosJanela[1],
 										p3 = pontosJanela[2],
-										p4 = pontosJanela[3];
+										p4 = pontosJanela[3],
+										pontoForaTeste = std::make_pair(-1,-1);
 
 					int xMin = p1.first,
 						yMin = p1.second,
@@ -149,6 +154,11 @@ void mouse(int btn, int state , int x , int y){
 						yMax = p2.second;
 
 					novosPontos = grid->cohenSutherland(primeiroPonto, segundoPonto, xMin, xMax, yMin, yMax);
+
+					std::cout << "Novos pontos: " << std::endl;
+					std::cout << novosPontos.first.first << ',' << novosPontos.first.second << std::endl;
+					std::cout << novosPontos.second.first << ',' << novosPontos.second.second << std::endl << std::endl;
+
 
 					//pinta pontos do lado de preto. Caso eles estejam fora, assim não vão ser pintados
 					double corPreta[3] = {0.0,0.0,0.0};
@@ -165,6 +175,12 @@ void mouse(int btn, int state , int x , int y){
 
 					primeiroPonto = novosPontos.first;
 					segundoPonto = novosPontos.second;
+
+					if (primeiroPonto == pontoForaTeste && segundoPonto == pontoForaTeste){
+						std::cout << "Ta fora!" << std::endl;
+						quadradosSelecionados.clear();
+						return;
+					}
 
 				}
 			}

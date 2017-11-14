@@ -463,9 +463,12 @@ std::pair<std::pair<int, int>, std::pair<int, int>>
 		std::cout << c1Bin << ',' << c1Dec << '\t' << c2Bin << ',' << c2Dec << std::endl;
 		std::cout << totalDentro << ',' << totalFora << std::endl;
 
-		if(totalDentro || totalFora){
+		if(totalDentro){
 			//Retorna os pontos que estão dentro
 			return std::make_pair(p1,p2);
+		}
+		else if (totalFora){
+			return std::make_pair(std::make_pair(-1,-1),std::make_pair(-1,-1));
 		}
 		else{
 			/*encontra a parte do plano de corte onde está a intersecção
