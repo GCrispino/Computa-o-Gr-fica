@@ -10,8 +10,6 @@
 #define LARGURA 800
 #define ESPACO_GRID 5
 #define TAMANHO_QUADRADO 30
-
-
 double corPonto[] = {1.0,0.0,0.0};
 Grid *grid;
 
@@ -38,7 +36,8 @@ void display(void)
 	glFlush();
 }
 
-void limpaVariaveisGlobiais(bool limpaGrid){
+void limpaVariaveisGlobais(bool limpaGrid)
+{
 	janela = false;
 
 	if (limpaGrid)
@@ -46,13 +45,13 @@ void limpaVariaveisGlobiais(bool limpaGrid){
 
 	quadradosSelecionados.clear();
 	lados.clear();
-	pontosJanela.clear();	
+	pontosJanela.clear();
 }
 
 void apertaTecla(unsigned char key, int x, int y){
 
 	if (key == 'c')
-		return limpaVariaveisGlobiais(true);
+		return limpaVariaveisGlobais(true);
 
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
@@ -67,12 +66,13 @@ void apertaTecla(unsigned char key, int x, int y){
 	if (modo != key){
 		modo = key;
 
-		limpaVariaveisGlobiais(false);
+		return limpaVariaveisGlobais(false);
 	}
 
 }
 
 void mouse(int btn, int state , int x , int y){
+
 
 	if (state == GLUT_DOWN){
 
@@ -155,11 +155,6 @@ void mouse(int btn, int state , int x , int y){
 
 					novosPontos = grid->cohenSutherland(primeiroPonto, segundoPonto, xMin, xMax, yMin, yMax);
 
-					std::cout << "Novos pontos: " << std::endl;
-					std::cout << novosPontos.first.first << ',' << novosPontos.first.second << std::endl;
-					std::cout << novosPontos.second.first << ',' << novosPontos.second.second << std::endl << std::endl;
-
-
 					//pinta pontos do lado de preto. Caso eles estejam fora, assim não vão ser pintados
 					double corPreta[3] = {0.0,0.0,0.0};
 					Quadrado qP1 = grid->getQuadrado(primeiroPonto.first,primeiroPonto.second),
@@ -176,12 +171,12 @@ void mouse(int btn, int state , int x , int y){
 					primeiroPonto = novosPontos.first;
 					segundoPonto = novosPontos.second;
 
+
 					if (primeiroPonto == pontoForaTeste && segundoPonto == pontoForaTeste){
 						std::cout << "Ta fora!" << std::endl;
 						quadradosSelecionados.clear();
 						return;
 					}
-
 				}
 			}
 
