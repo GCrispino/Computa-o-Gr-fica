@@ -36,6 +36,8 @@ void display(void)
 	glFlush();
 }
 
+void reshape(int width,int height){}
+
 void limpaVariaveisGlobais(bool limpaGrid)
 {
 	janela = false;
@@ -46,6 +48,9 @@ void limpaVariaveisGlobais(bool limpaGrid)
 	quadradosSelecionados.clear();
 	lados.clear();
 	pontosJanela.clear();
+
+	glFlush();
+	
 }
 
 void apertaTecla(unsigned char key, int x, int y){
@@ -60,6 +65,7 @@ void apertaTecla(unsigned char key, int x, int y){
 			grid->preenchimentoVarredura(lados);
 			std::cout << "Terminou de preencher!" << std::endl;
 			lados.clear();
+			glFlush();
 		}
 	}
 
@@ -72,7 +78,6 @@ void apertaTecla(unsigned char key, int x, int y){
 }
 
 void mouse(int btn, int state , int x , int y){
-
 
 	if (state == GLUT_DOWN){
 
@@ -186,6 +191,8 @@ void mouse(int btn, int state , int x , int y){
 		}
 
 	}
+
+	glFlush();
 }
 int main(int argc,char *argv[]){
 
@@ -223,6 +230,7 @@ int main(int argc,char *argv[]){
 
 
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
 	glutKeyboardFunc(apertaTecla);
 	glutMainLoop();
