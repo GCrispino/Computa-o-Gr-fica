@@ -18,7 +18,7 @@ std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados;
 
 unsigned char modo = '1';
 bool janela = false;
-std::vector<std::pair<int, int>> pontosJanela;
+std::vector<std::pair<int, int>> pontosJanela,tempPontosSelecao;
 
 void init2D(float r, float g, float b)
 {
@@ -75,6 +75,55 @@ void apertaTecla(unsigned char key, int x, int y){
 		return limpaVariaveisGlobais(false);
 	}
 
+}
+
+void mouseMovimento(int x , int y){
+	std::vector<std::pair<int,int>> linhaDesenhada;
+	int *coordGrid = grid->mapCoordenadaRealParaGrid(x, y),
+		xMaxGrid = LARGURA / TAMANHO_QUADRADO - 1,
+		yMaxGrid = ALTURA / TAMANHO_QUADRADO - 1;
+
+	grid->apagaPontos(tempPontosSelecao);
+	tempPontosSelecao.clear();
+
+	if (coordGrid[0] < 0 || coordGrid[1] < 0 || coordGrid[0] > xMaxGrid || coordGrid[1] > yMaxGrid)
+		return;
+
+	std::pair<int, int> p1 = std::make_pair(quadradosSelecionados[0].first, quadradosSelecionados[0].second),
+						p2 = std::make_pair(coordGrid[0], coordGrid[1]),
+						p3,
+						p4;
+
+	if (modo == '5'){
+		int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
+
+		p3 = std::make_pair(xMax, yMin);
+		p4 = std::make_pair(xMin, yMax);
+
+		//pinta a janela
+		linhaDesenhada = grid->pintaLinha(p1, p3);
+		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+
+		linhaDesenhada = grid->pintaLinha(p2, p4);
+		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+
+		//reseta valores dos pontos porque são modificados nas chamadas de 'Grid::pintaLinha()'
+		p1 = std::make_pair(quadradosSelecionados[0].first, quadradosSelecionados[0].second);
+		p2 = std::make_pair(coordGrid[0], coordGrid[1]);
+		p3 = std::make_pair(xMax, yMin);
+		p4 = std::make_pair(xMin, yMax);
+
+		linhaDesenhada = grid->pintaLinha(p1, p4);
+		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+
+		linhaDesenhada = grid->pintaLinha(p2, p3);
+		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+
+		//===============================================================================================
+
+	}
+
+	glFlush();
 }
 
 void mouse(int btn, int state , int x , int y){
@@ -232,6 +281,7 @@ int main(int argc,char *argv[]){
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMovimento);
 	glutKeyboardFunc(apertaTecla);
 	glutMainLoop();
 }

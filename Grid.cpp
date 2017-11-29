@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <GL/glut.h>
 #include "Grid.hpp"
+#include "Util.hpp"
 
 //AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]
 //AJEITAR pintaQuadrado -> PODE SER REDUZIDA
@@ -59,42 +60,63 @@ void Grid::pintaQuadrado(const Quadrado &q){
 	q.pinta();
 }
 
-void Grid::pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto){
+std::vector<std::pair<int, int>> Grid::pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto)
+{
 	std::vector<std::pair<int, int>> pontos;
 	TrocaReflexao tipoTroca;
 	std::stack<TrocaReflexao> tiposTroca;
 
-	std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
-	std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
-	std::cout << std::endl;
+	// std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
+	// std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
+	// std::cout << std::endl;
 
 	tiposTroca = Grid::reflexao(primeiroPonto, segundoPonto);
 	pontos = Grid::bresenham(primeiroPonto.first, primeiroPonto.second, segundoPonto.first, segundoPonto.second);
 
-	std::cout << "Depois da reflexão: " << std::endl;
-	std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
-	std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
-	std::cout << std::endl;
+	// std::cout << "Depois da reflexão: " << std::endl;
+	// std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
+	// std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
+	// std::cout << std::endl;
 
-	std::cout << "Depois da reflexão inversa: ";
+	// std::cout << "Depois da reflexão inversa: ";
 	//reflete cada ponto e os pinta
 	for (unsigned int i = 0; i < pontos.size(); ++i)
 	{
 		std::pair<int, int> &ponto = pontos[i];
 		Grid::reflexaoInversa(tiposTroca, ponto.first, ponto.second);
-		std::cout << "Ponto: " << ponto.first << ',' << ponto.second << " ";
+		// std::cout << "Ponto: " << ponto.first << ',' << ponto.second << " ";
 		this->pintaQuadrado(ponto.first, ponto.second);
 
 		this->pintaFrameBuffer(this->corLinha, ponto.first, ponto.second);
 	}
-	std::cout << std::endl
-			  << std::endl;
+	// std::cout << std::endl
+	// 		  << std::endl;
+
+	return pontos;
 }
 
 void Grid::pintaFrameBuffer(const double cor[],int x,int y){
 	this->frameBuffer[x][y][0] = cor[0];
 	this->frameBuffer[x][y][1] = cor[1];
 	this->frameBuffer[x][y][2] = cor[2];
+}
+
+void Grid::apagaPontos(const std::vector<std::pair<int, int>> &pontos){
+	double preto[] = {0.0, 0.0, 0.0};
+
+	for (const auto &ponto: pontos){
+		unsigned int x = ponto.first,y = ponto.second;
+		if (!this->mesmaCor(preto, this->frameBuffer[x][y].data())){
+			Quadrado &q = this->getQuadrado(x, y);
+			//muda a cor do quadrado para preto apenas para pintar de volta para preto
+			q.setCor(preto);
+			q.pinta();
+			//depois volta para a cor que estava antes
+			q.setCor(this->corLinha);
+
+			this->pintaFrameBuffer(preto, x, y);
+		}
+	}
 }
 
 void Grid::limpa(){
@@ -123,11 +145,6 @@ const std::vector<double> Grid::getCorFrameBuffer(int x, int y){
 	return this->frameBuffer[x][y];
 }
 
-void Grid::troca(int &x, int &y){
-	int aux = x;
-	x = y;
-	y = aux;
-}
 
 bool Grid::mesmaCor(const double *c1,const double *c2){
 	return c1[0] == c2[0] && c1[1] == c2[1] && c1[2] == c2[2];
@@ -138,11 +155,11 @@ std::stack<TrocaReflexao> Grid::reflexao(std::pair<int,int> &p1,std::pair<int,in
 	double m = (double)(y2 - y1) / (x2 - x1);
 	std::stack<TrocaReflexao> tiposTroca;
 
-	std::cout << "m: " << m << std::endl;
+	// std::cout << "m: " << m << std::endl;
 
 	if (m > 1 || m < -1){
-		troca(x1,y1);
-		troca(x2,y2);
+		Util::troca(x1,y1);
+		Util::troca(x2, y2);
 		tiposTroca.push(TrocaReflexao::TROCA_XY);
 	}
 	if (x1 > x2){
@@ -162,12 +179,12 @@ std::stack<TrocaReflexao> Grid::reflexao(std::pair<int,int> &p1,std::pair<int,in
 
 void Grid::reflexaoInversa(std::stack<TrocaReflexao> tiposTroca,int &x, int &y){
 	while(!tiposTroca.empty()){
-		std::cout << "Reflexao inversa: ponto: " << x << "," << y << std::endl;
+		// std::cout << "Reflexao inversa: ponto: " << x << "," << y << std::endl;
 		TrocaReflexao tipoTroca = tiposTroca.top();
 		tiposTroca.pop();
 		switch (tipoTroca){
 			case TrocaReflexao::TROCA_XY:
-				troca(x,y);
+				Util::troca(x,y);
 				break;
 			case TrocaReflexao::TROCA_X:
 				x = -x;
@@ -209,10 +226,10 @@ std::vector< std::pair<int,int> > Grid::bresenham(int x1, int y1,int x2, int y2)
 	double m = (double)(y2 - y1) / (x2 - x1);
 	double e = m - 0.5f;
 
-	std::cout << "bresenham: ";
+	// std::cout << "bresenham: ";
 	while(x1 <= x2){
 		pontos.push_back(std::make_pair(x1,y1));
-		std::cout << x1 <<"," << y1 << " ";
+		// std::cout << x1 <<"," << y1 << " ";
 
 		if (e >= 0){
 			++y1;
@@ -225,7 +242,7 @@ std::vector< std::pair<int,int> > Grid::bresenham(int x1, int y1,int x2, int y2)
 
 	}
 
-	std::cout << std::endl;
+	// std::cout << std::endl;
 
 	return pontos;
 }
