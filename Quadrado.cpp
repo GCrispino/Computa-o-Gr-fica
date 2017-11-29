@@ -18,7 +18,6 @@ Quadrado::Quadrado(int xReal,int yReal,int tamanho,double cor[3]):xReal(xReal),y
 		}
 	glEnd();
 
-	// glFlush();
 }
 
 Quadrado::Quadrado(const Quadrado &q)
@@ -36,7 +35,6 @@ void Quadrado::pinta() const{
 				glVertex2i(i,j);
 	glEnd();
 
-	// glFlush();
 }
 
 const int Quadrado::getXReal() const{

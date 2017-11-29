@@ -42,7 +42,7 @@ class Grid{
 		void preenchimentoVarredura(const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
 		void preenchimentoRecursivo(int x, int y, const double * corPonto,const double * corInicial);
 
-		static std::pair<std::pair<int, int>, std::pair<int, int>>
+		/*static std::pair<std::pair<int, int>, std::pair<int, int>>
 			cohenSutherland(const std::pair<int,int> &p1,const std::pair<int, int> &p2,int xMin,int xMax,int yMin,int yMax);
 
 		static std::string getCodigoCS(const std::pair<int,int> &p,int xMin,int xMax,int yMin,int yMax);
@@ -52,7 +52,7 @@ class Grid{
 			getPontoInterseccaoCS(std::pair < unsigned int, unsigned int> infoDiffBit,
 							  const std::pair<const std::pair<int, int> &, const std::string &> &p1Info,
 							  const std::pair<const std::pair<int, int> &, const std::string &> &p2Info,
-							  int xMin, int xMax, int yMin, int yMax);
+							  int xMin, int xMax, int yMin, int yMax);*/
 
 		static bool mesmaCor(const double *,const double *);
 		static std::stack<TrocaReflexao> reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2);

@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include "Grid.hpp"
+#include "Janela.hpp"
 
 #define ALTURA 800
 #define LARGURA 800
@@ -17,7 +18,8 @@ std::vector< std::pair<int,int> > quadradosSelecionados;
 std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados;
 
 unsigned char modo = '1';
-bool janela = false;
+// bool janela = false;
+Janela * janela = nullptr;
 std::vector<std::pair<int, int>> pontosJanela,tempPontosSelecao;
 
 void init2D(float r, float g, float b)
@@ -40,7 +42,8 @@ void reshape(int width,int height){}
 
 void limpaVariaveisGlobais(bool limpaGrid)
 {
-	janela = false;
+	delete janela;
+	janela = nullptr;
 
 	if (limpaGrid)
 		grid->limpa();
@@ -163,6 +166,8 @@ void mouse(int btn, int state , int x , int y){
 										p3, p4;
 
 					int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
+					//instancia a janela
+					janela = new Janela(xMin,yMin,xMax,yMax);
 
 					p3 = std::make_pair(xMax, yMin);
 					p4 = std::make_pair(xMin, yMax);
@@ -188,13 +193,11 @@ void mouse(int btn, int state , int x , int y){
 					grid->pintaLinha(p2, p3);
 					//===============================================================================================
 
-
-					janela = true;
 					quadradosSelecionados.clear();
 					return ;
 				}
 				else{
-					std::cout << "Já pintou janela!" << std::endl;
+					//Já pintou janela
 					std::pair<std::pair<int, int>, std::pair<int, int>> novosPontos;
 					std::pair<int, int> p1 = pontosJanela[0],
 										p2 = pontosJanela[1],
@@ -207,7 +210,7 @@ void mouse(int btn, int state , int x , int y){
 						xMax = p2.first,
 						yMax = p2.second;
 
-					novosPontos = grid->cohenSutherland(primeiroPonto, segundoPonto, xMin, xMax, yMin, yMax);
+					novosPontos = janela->cohenSutherland(primeiroPonto, segundoPonto);
 
 					//pinta pontos do lado de preto. Caso eles estejam fora, assim não vão ser pintados
 					double corPreta[3] = {0.0,0.0,0.0};
