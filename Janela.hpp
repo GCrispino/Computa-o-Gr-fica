@@ -1,0 +1,29 @@
+#include <iostream>
+#include <vector>
+
+class Janela{
+	private:
+		int xMin,yMin,xMax,yMax;
+		// std::vector<std::pair<int,int>> pontosJanela;
+
+	public:
+		Janela(int xMin, int yMin, int xMax, int yMax);
+		Janela(const std::pair<int, int> &p1, const std::pair<int, int> &p2);
+
+		std::pair<std::pair<int, int>, std::pair<int, int>>
+			cohenSutherland(const std::pair<int,int> &p1,const std::pair<int, int> &p2);
+
+		std::string getCodigoCS(const std::pair<int,int> &p);
+		std::pair<unsigned int, unsigned int> 
+			getDiffBitCS(const std::string &c1Bin, const std::string &c2Bin);
+		std::pair<std::pair<int, int>, std::pair<int, int>>
+			getPontoInterseccaoCS(std::pair < unsigned int, unsigned int> infoDiffBit,
+							  const std::pair<const std::pair<int, int> &, const std::string &> &p1Info,
+							  const std::pair<const std::pair<int, int> &, const std::string &> &p2Info);
+
+		// std::vector<std::pair<int, int>> getPontosJanela();
+		int getXMin() const;
+		int getYMin() const;
+		int getXMax() const;
+		int getYMax() const;
+};

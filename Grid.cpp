@@ -5,6 +5,7 @@
 #include <GL/glut.h>
 #include "Grid.hpp"
 #include "Util.cpp"
+// #include "Janela.hpp"
 
 //AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]
 //AJEITAR pintaQuadrado -> PODE SER REDUZIDA
@@ -93,6 +94,36 @@ std::vector<std::pair<int, int>> Grid::pintaLinha(std::pair<int, int> &primeiroP
 	// 		  << std::endl;
 
 	return pontos;
+}
+
+void Grid::pintaJanela(const Janela &janela){
+	std::pair<int, int> p1, p2,p3, p4;
+	int xMin = janela.getXMin(),yMin = janela.getYMin(),
+		xMax = janela.getXMax(),yMax = janela.getYMax();
+		
+
+	p1 = std::make_pair(xMin, yMin);
+	p2 = std::make_pair(xMax, yMax);
+	p3 = std::make_pair(xMax, yMin);
+	p4 = std::make_pair(xMin, yMax);
+
+	// pontosJanela.push_back(p1);
+	// pontosJanela.push_back(p2);
+	// pontosJanela.push_back(p3);
+	// pontosJanela.push_back(p4);
+
+	//pinta a janela
+	this->pintaLinha(p1, p3);
+	this->pintaLinha(p2, p4);
+
+	//reseta valores dos pontos porque são modificados nas chamadas de 'Grid::pintaLinha()'
+	p1 = std::make_pair(xMin, yMin);
+	p2 = std::make_pair(xMax, yMax);
+	p3 = std::make_pair(xMax, yMin);
+	p4 = std::make_pair(xMin, yMax);
+
+	this->pintaLinha(p1, p4);
+	this->pintaLinha(p2, p3);
 }
 
 void Grid::pintaFrameBuffer(const double cor[],int x,int y){

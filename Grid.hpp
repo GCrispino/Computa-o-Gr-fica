@@ -2,6 +2,7 @@
 #include <map>
 #include <stack>
 #include "Quadrado.hpp"
+#include "Janela.hpp"
 
 enum class TrocaReflexao {NAO_TROCA,TROCA_X,TROCA_Y,TROCA_XY};
 
@@ -25,6 +26,7 @@ class Grid{
 		void pintaQuadrado(int xGrid, int yGrid);
 		void pintaQuadrado(const Quadrado &);
 		std::vector<std::pair<int, int>> pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto);
+		void pintaJanela(const Janela &);
 		void pintaFrameBuffer(const double cor[],int x,int y);
 		void apagaPontos(const std::vector<std::pair<int,int>> &pontos);
 		void limpa();

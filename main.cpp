@@ -5,7 +5,6 @@
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include "Grid.hpp"
-#include "Janela.hpp"
 
 #define ALTURA 800
 #define LARGURA 800
@@ -18,7 +17,6 @@ std::vector< std::pair<int,int> > quadradosSelecionados;
 std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados;
 
 unsigned char modo = '1';
-// bool janela = false;
 Janela * janela = nullptr;
 std::vector<std::pair<int, int>> pontosJanela,tempPontosSelecao;
 
@@ -40,8 +38,7 @@ void display(void)
 
 void reshape(int width,int height){}
 
-void limpaVariaveisGlobais(bool limpaGrid)
-{
+void limpaVariaveisGlobais(bool limpaGrid){
 	delete janela;
 	janela = nullptr;
 
@@ -169,46 +166,25 @@ void mouse(int btn, int state , int x , int y){
 					//instancia a janela
 					janela = new Janela(xMin,yMin,xMax,yMax);
 
-					p3 = std::make_pair(xMax, yMin);
-					p4 = std::make_pair(xMin, yMax);
 
-					pontosJanela.push_back(p1);
-					pontosJanela.push_back(p2);
-					pontosJanela.push_back(p3);
-					pontosJanela.push_back(p4);
-
-					int *coordenadaGrid = grid->mapCoordenadaRealParaGrid(x, y);
-
-					//pinta a janela
-					grid->pintaLinha(p1, p3);
-					grid->pintaLinha(p2, p4);
-
-					//reseta valores dos pontos porque são modificados nas chamadas de 'Grid::pintaLinha()'
-					p1 = primeiroPonto;
-					p2 = segundoPonto;
-					p3 = std::make_pair(xMax, yMin);
-					p4 = std::make_pair(xMin, yMax);
-
-					grid->pintaLinha(p1, p4);
-					grid->pintaLinha(p2, p3);
-					//===============================================================================================
+					grid->pintaJanela(*janela);
 
 					quadradosSelecionados.clear();
 					return ;
 				}
 				else{
 					//Já pintou janela
+					int xMin = janela->getXMin(), yMin = janela->getYMin(),
+						xMax = janela->getXMax(), yMax = janela->getYMax();
 					std::pair<std::pair<int, int>, std::pair<int, int>> novosPontos;
-					std::pair<int, int> p1 = pontosJanela[0],
-										p2 = pontosJanela[1],
-										p3 = pontosJanela[2],
-										p4 = pontosJanela[3],
-										pontoForaTeste = std::make_pair(-1,-1);
+			
+					std::pair<int, int> p1 = std::make_pair(xMin, yMin),
+										p2 = std::make_pair(xMax, yMax),
+										p3 = std::make_pair(xMax, yMin),
+										p4 = std::make_pair(xMin, yMax),
+										pontoForaTeste = std::make_pair(-1, -1);
 
-					int xMin = p1.first,
-						yMin = p1.second,
-						xMax = p2.first,
-						yMax = p2.second;
+
 
 					novosPontos = janela->cohenSutherland(primeiroPonto, segundoPonto);
 
@@ -247,29 +223,6 @@ void mouse(int btn, int state , int x , int y){
 	glFlush();
 }
 int main(int argc,char *argv[]){
-
-	std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados = {
-		// {{5, 23}, {12, 0}},
-		// // {{5, 23}, {15, 13}},
-		// {{5,23},{20,7}},
-		// // {{12, 0}, {15, 13}},
-		// {{12, 0}, {23, 22}},
-		// // {{15, 13}, {20, 7}},
-		// // {{15, 13}, {23, 22}},
-		// {{20, 7}, {23, 22}}
-
-		// {{12,4},{12,14}},
-		// {{12,4},{22,5}},
-		// {{12,14},{22,13}},
-		// {{22,5},{22,13}}
-
-		// {{3,12},{6,4}},
-		// {{3,12},{8,23}},
-		// {{6,4},{11,10}},
-		// {{8,23},{11,10}}
-	},outrosLados;
-	std::vector<std::pair<int,int>> pontos;
-	
 	
 	glutInit(&argc,argv);
 	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
