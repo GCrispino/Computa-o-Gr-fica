@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <GL/glut.h>
 #include "Grid.hpp"
-#include "Util.cpp"
+#include "Util.hpp"
 // #include "Janela.hpp"
 
 //AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]

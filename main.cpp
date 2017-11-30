@@ -115,7 +115,6 @@ void mouseMovimento(int x , int y){
 		grid->pintaJanela(*janelaSelecao);
 
 		std::cout << "nPontosDentro: " << janelaSelecao->getPontosDentro().size() << std::endl;
-		// grid->apagaPontos(janelaSelecao->getPontosDentro());
 
 	}
 
