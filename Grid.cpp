@@ -96,21 +96,29 @@ std::vector<std::pair<int, int>> Grid::pintaLinha(std::pair<int, int> &primeiroP
 	return pontos;
 }
 
+//MUDAR ISSO AQUI DEPOIS PARA PEGAR OS PONTOS DA BORDA E PINTAR DIRETO!
 void Grid::pintaJanela(const Janela &janela){
+	double vermelho[] = {1.0,0.0,0.0};
+
+	// std::cout << "Pontos!!!" << std::endl;
+	// for (auto & ponto: janela.getPontosBorda()){
+	// 	// std::cout << ponto.first << ',' << ponto.second << std::endl;
+	//  	this->pintaQuadrado(ponto.first,ponto.second);
+	// 	this->pintaFrameBuffer(vermelho,ponto.first,ponto.second);
+	// }
+	
+	std::cout << std::endl << std::endl;
+
 	std::pair<int, int> p1, p2,p3, p4;
 	int xMin = janela.getXMin(),yMin = janela.getYMin(),
 		xMax = janela.getXMax(),yMax = janela.getYMax();
-		
+
+	
 
 	p1 = std::make_pair(xMin, yMin);
 	p2 = std::make_pair(xMax, yMax);
 	p3 = std::make_pair(xMax, yMin);
 	p4 = std::make_pair(xMin, yMax);
-
-	// pontosJanela.push_back(p1);
-	// pontosJanela.push_back(p2);
-	// pontosJanela.push_back(p3);
-	// pontosJanela.push_back(p4);
 
 	//pinta a janela
 	this->pintaLinha(p1, p3);
@@ -135,9 +143,11 @@ void Grid::pintaFrameBuffer(const double cor[],int x,int y){
 void Grid::apagaPontos(const std::vector<std::pair<int, int>> &pontos){
 	double preto[] = {0.0, 0.0, 0.0};
 
+	std::cout << "APaga pontos!!!" << std::endl;
 	for (const auto &ponto: pontos){
 		unsigned int x = ponto.first,y = ponto.second;
 		if (!this->mesmaCor(preto, this->frameBuffer[x][y].data())){
+			std::cout << "ponto: " << x << ',' << y << std::endl;
 			Quadrado &q = this->getQuadrado(x, y);
 			//muda a cor do quadrado para preto apenas para pintar de volta para preto
 			q.setCor(preto);

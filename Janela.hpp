@@ -4,11 +4,12 @@
 class Janela{
 	private:
 		int xMin,yMin,xMax,yMax;
-		// std::vector<std::pair<int,int>> pontosJanela;
+		std::vector<std::pair<int,int>> pontosBorda;
+		std::vector<std::pair<int,int>> pontosDentro;
 
 	public:
 		Janela(int xMin, int yMin, int xMax, int yMax);
-		Janela(const std::pair<int, int> &p1, const std::pair<int, int> &p2);
+//		Janela(const std::pair<int, int> &p1, const std::pair<int, int> &p2);
 
 		std::pair<std::pair<int, int>, std::pair<int, int>>
 			cohenSutherland(const std::pair<int,int> &p1,const std::pair<int, int> &p2);
@@ -21,9 +22,17 @@ class Janela{
 							  const std::pair<const std::pair<int, int> &, const std::string &> &p1Info,
 							  const std::pair<const std::pair<int, int> &, const std::string &> &p2Info);
 
-		// std::vector<std::pair<int, int>> getPontosJanela();
+		void atualizaPontos();
+
+		std::vector<std::pair<int, int>> getPontosBorda() const;
+		std::vector<std::pair<int, int>> getPontosDentro() const;
 		int getXMin() const;
 		int getYMin() const;
 		int getXMax() const;
 		int getYMax() const;
+
+		void setXMin(int xMin);
+		void setYMin(int yMin);
+		void setXMax(int xMax);
+		void setYMax(int yMax);
 };

@@ -17,7 +17,7 @@ std::vector< std::pair<int,int> > quadradosSelecionados;
 std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados;
 
 unsigned char modo = '1';
-Janela * janela = nullptr;
+Janela * janela = nullptr,*janelaSelecao = nullptr;
 std::vector<std::pair<int, int>> pontosJanela,tempPontosSelecao;
 
 void init2D(float r, float g, float b)
@@ -41,6 +41,9 @@ void reshape(int width,int height){}
 void limpaVariaveisGlobais(bool limpaGrid){
 	delete janela;
 	janela = nullptr;
+
+	delete janelaSelecao;
+	janelaSelecao = nullptr;
 
 	if (limpaGrid)
 		grid->limpa();
@@ -78,13 +81,12 @@ void apertaTecla(unsigned char key, int x, int y){
 }
 
 void mouseMovimento(int x , int y){
+
 	std::vector<std::pair<int,int>> linhaDesenhada;
 	int *coordGrid = grid->mapCoordenadaRealParaGrid(x, y),
 		xMaxGrid = LARGURA / TAMANHO_QUADRADO - 1,
 		yMaxGrid = ALTURA / TAMANHO_QUADRADO - 1;
 
-	grid->apagaPontos(tempPontosSelecao);
-	tempPontosSelecao.clear();
 
 	if (coordGrid[0] < 0 || coordGrid[1] < 0 || coordGrid[0] > xMaxGrid || coordGrid[1] > yMaxGrid)
 		return;
@@ -93,33 +95,27 @@ void mouseMovimento(int x , int y){
 						p2 = std::make_pair(coordGrid[0], coordGrid[1]),
 						p3,
 						p4;
-
 	if (modo == '5'){
 		int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
 
-		p3 = std::make_pair(xMax, yMin);
-		p4 = std::make_pair(xMin, yMax);
+		if (!janelaSelecao)
+			janelaSelecao = new Janela(xMin, yMin, xMax, yMax);
+		else{
 
-		//pinta a janela
-		linhaDesenhada = grid->pintaLinha(p1, p3);
-		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+			std::cout << janelaSelecao->getXMin() << ',' << janelaSelecao->getYMin() << ' ';
+			std::cout << janelaSelecao->getXMax() << ',' << janelaSelecao->getYMax() << std::endl;
 
-		linhaDesenhada = grid->pintaLinha(p2, p4);
-		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+			grid->apagaPontos(janelaSelecao->getPontosDentro());
+			grid->apagaPontos(janelaSelecao->getPontosBorda());
 
-		//reseta valores dos pontos porque são modificados nas chamadas de 'Grid::pintaLinha()'
-		p1 = std::make_pair(quadradosSelecionados[0].first, quadradosSelecionados[0].second);
-		p2 = std::make_pair(coordGrid[0], coordGrid[1]);
-		p3 = std::make_pair(xMax, yMin);
-		p4 = std::make_pair(xMin, yMax);
+			janelaSelecao->setXMax(xMax);
+			janelaSelecao->setYMax(yMax);
+		}
 
-		linhaDesenhada = grid->pintaLinha(p1, p4);
-		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
+		grid->pintaJanela(*janelaSelecao);
 
-		linhaDesenhada = grid->pintaLinha(p2, p3);
-		tempPontosSelecao.insert(std::end(tempPontosSelecao), std::begin(linhaDesenhada), std::end(linhaDesenhada));
-
-		//===============================================================================================
+		std::cout << "nPontosDentro: " << janelaSelecao->getPontosDentro().size() << std::endl;
+		// grid->apagaPontos(janelaSelecao->getPontosDentro());
 
 	}
 
@@ -165,8 +161,6 @@ void mouse(int btn, int state , int x , int y){
 					int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
 					//instancia a janela
 					janela = new Janela(xMin,yMin,xMax,yMax);
-
-
 					grid->pintaJanela(*janela);
 
 					quadradosSelecionados.clear();
@@ -223,7 +217,7 @@ void mouse(int btn, int state , int x , int y){
 	glFlush();
 }
 int main(int argc,char *argv[]){
-	
+
 	glutInit(&argc,argv);
 	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize (LARGURA, ALTURA);

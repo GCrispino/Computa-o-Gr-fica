@@ -1,9 +1,28 @@
 #include <iostream>
+#include <utility>
 #include "Janela.hpp"
 
 Janela::Janela(int xMin, int yMin, int xMax, int yMax)
 :xMin(xMin),yMin(yMin),xMax(xMax),yMax(yMax){
+	// this->pontosBorda = std::vector<std::pair<int, int>>();
+	// this->pontosDentro = std::vector<std::pair<int, int>>();
 
+	this->atualizaPontos();
+
+	/*for (int x = xMin;x <= xMax;++x){
+		this->pontosBorda.push_back(std::make_pair(x,yMin));
+		this->pontosBorda.push_back(std::make_pair(x,yMax));
+	}
+
+	for (int y = yMin + 1;y <= yMax - 1;++y){
+		this->pontosBorda.push_back(std::make_pair(xMin, y));
+		this->pontosBorda.push_back(std::make_pair(xMax, y));
+	}
+
+	for (int x = xMin + 1;x <= xMax - 1;++x)
+		for (int y = yMin + 1;y <= yMax - 1;++y)
+			this->pontosDentro.push_back(std::make_pair(x,y));*/
+			
 }
 
 // Janela::Janela(const std::pair<int, int> &p1, const std::pair<int, int> &p2){}
@@ -166,6 +185,30 @@ Janela::getPontoInterseccaoCS(
 		return std::make_pair(outroPonto, std::make_pair(x, y));
 }
 
+void Janela::atualizaPontos(){
+	for (int x = xMin; x <= xMax; ++x){
+		this->pontosBorda.push_back(std::make_pair(x, yMin));
+		this->pontosBorda.push_back(std::make_pair(x, yMax));
+	}
+
+	for (int y = yMin + 1; y <= yMax - 1; ++y){
+		this->pontosBorda.push_back(std::make_pair(xMin, y));
+		this->pontosBorda.push_back(std::make_pair(xMax, y));
+	}
+
+	for (int x = xMin + 1; x <= xMax - 1; ++x)
+		for (int y = yMin + 1; y <= yMax - 1; ++y)
+			this->pontosDentro.push_back(std::make_pair(x, y));
+}
+
+std::vector< std::pair<int, int> > Janela::getPontosBorda() const{
+	return this->pontosBorda;
+}
+
+std::vector< std::pair<int, int> > Janela::getPontosDentro() const{
+	return this->pontosDentro;
+}
+
 int Janela::getXMin() const{
 	return this->xMin;
 }
@@ -180,4 +223,23 @@ int Janela::getXMax() const{
 
 int Janela::getYMax() const{
 	return this->yMax;
+}
+
+void Janela::setXMin(int xMin){
+	this->xMin = xMin;
+	this->atualizaPontos();
+}
+
+void Janela::setYMin(int yMin){
+	this->yMin = yMin;
+	this->atualizaPontos();
+}
+
+void Janela::setXMax(int xMax){
+	this->xMax = xMax;
+	this->atualizaPontos();
+}
+void Janela::setYMax(int yMax){
+	this->yMax = yMax;
+	this->atualizaPontos();
 }
