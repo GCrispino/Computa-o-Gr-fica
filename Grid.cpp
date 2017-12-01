@@ -493,14 +493,19 @@ void Grid::preenchimentoRecursivo(int x, int y,const double *corPonto,const doub
 std::vector<std::pair<int, int>> Grid::translacao(Janela &j, int fatorX, int fatorY){
 
 	std::vector<std::pair<int, int>> pontosDentroJanela = j.getPontosDentro(),
-		pontosTransladados(pontosDentroJanela.size());
+		pontosTransladados;
 
 	for (int i = 0; i < pontosDentroJanela.size(); ++i){
 		auto &ponto = pontosDentroJanela[i];
-		int x = ponto.first + fatorX,
-			y = ponto.second + fatorY;
+		int x = ponto.first,
+			y = ponto.second,
+			novoX = ponto.first + fatorX,
+			novoY = ponto.second + fatorY;
+		const double corPreta[] = {0.0, 0.0, 0.0}, *corPonto = this->getCorFrameBuffer(x, y).data();
 
-		pontosTransladados[i] = std::make_pair(x, y);
+		if (!Grid::mesmaCor(corPreta, corPonto))
+			pontosTransladados.push_back(std::make_pair(novoX, novoY));
+
 	}
 
 	return pontosTransladados;
@@ -525,8 +530,6 @@ std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
 	}
 
 	matPontosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo), matPontosARotacionar);
-
-
 
 	// std::cout << "matriz pontos a rotacionar: " << std::endl;
 	// std::cout << "Tamanho: " << matPontosARotacionar[0].size() << std::endl;
@@ -553,26 +556,28 @@ std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
 
 std::vector<std::pair<int, int>> Grid::escala(Janela &j, double fatorX, double fatorY){
 	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),
-									//  std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),
-		matPontosEscalados;
+									 matPontosAEscalar(matPontosDentroJanela.size()),
+									 matPontosEscalados;
 
-	// std::cout << "Pontos matriz: " << std::endl;
-	// Util::imprimeMatriz(matPontosDentroJanela);
-	// std::cout << std::endl;
-	std::vector<std::pair<int, int>> pontosEscalados(matPontosDentroJanela[0].size());
+	for (unsigned int i = 0; i < matPontosDentroJanela[0].size(); ++i){
 
-	// std::cout << "matriz de rotação: " << std::endl;
-	// Util::imprimeMatriz(Transformacoes::getMatRotacao(angulo));
-	// std::cout << std::endl;
-	// std::cout << cos(angulo) << ' ' << sin(angulo) << std::endl;
+		int x = matPontosDentroJanela[0][i], y = matPontosDentroJanela[1][i];
 
-	matPontosEscalados = Util::multiplicaMatriz(Transformacoes::getMatEscala(fatorX,fatorY), matPontosDentroJanela);
+		const double corPreta[] = {0.0, 0.0, 0.0}, *corPonto = this->getCorFrameBuffer(x, y).data();
 
-	// Util::imprimeMatriz(matPontosEscalados);
+		if (!Grid::mesmaCor(corPreta, corPonto)){
+			matPontosAEscalar[0].push_back(x);
+			matPontosAEscalar[1].push_back(y);
+		}
+	}
 
-	for (int i = 0; i < pontosEscalados.size(); ++i){
-		int x = matPontosEscalados[0][i],
-			y = matPontosEscalados[1][i];
+	matPontosEscalados = Util::multiplicaMatriz(Transformacoes::getMatEscala(fatorX,fatorY), matPontosAEscalar);
+
+	std::vector<std::pair<int, int>> pontosEscalados(matPontosAEscalar[0].size());
+
+	for (int i = 0; i < matPontosAEscalar[0].size(); ++i){
+		int x = std::round(matPontosEscalados[0][i]),
+			y = std::round(matPontosEscalados[1][i]);
 
 		pontosEscalados[i] = std::make_pair(x, y);
 	}
