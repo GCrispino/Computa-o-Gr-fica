@@ -46,6 +46,7 @@ class Grid{
 
 		std::vector<std::pair<int, int>> translacao(Janela &j, int fatorX, int fatorY);
 		std::vector<std::pair<int,int>> rotacao(Janela &j,double angulo);
+		std::vector<std::pair<int, int>> escala(Janela &j, double fatorX, double fatorY);
 
 		static bool mesmaCor(const double *,const double *);
 		static std::stack<TrocaReflexao> reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2);

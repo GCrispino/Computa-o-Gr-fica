@@ -534,3 +534,32 @@ std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
 
 	return pontosRotacionados;
 }
+
+std::vector<std::pair<int, int>> Grid::escala(Janela &j, double fatorX, double fatorY){
+	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),
+									//  std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),
+		matPontosEscalados;
+
+	// std::cout << "Pontos matriz: " << std::endl;
+	// Util::imprimeMatriz(matPontosDentroJanela);
+	// std::cout << std::endl;
+	std::vector<std::pair<int, int>> pontosEscalados(matPontosDentroJanela[0].size());
+
+	// std::cout << "matriz de rotação: " << std::endl;
+	// Util::imprimeMatriz(Transformacoes::getMatRotacao(angulo));
+	// std::cout << std::endl;
+	// std::cout << cos(angulo) << ' ' << sin(angulo) << std::endl;
+
+	matPontosEscalados = Util::multiplicaMatriz(Transformacoes::getMatEscala(fatorX,fatorY), matPontosDentroJanela);
+
+	// Util::imprimeMatriz(matPontosEscalados);
+
+	for (int i = 0; i < pontosEscalados.size(); ++i){
+		int x = matPontosEscalados[0][i],
+			y = matPontosEscalados[1][i];
+
+		pontosEscalados[i] = std::make_pair(x, y);
+	}
+
+	return pontosEscalados;
+}

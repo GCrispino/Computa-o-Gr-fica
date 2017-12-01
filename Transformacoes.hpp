@@ -9,10 +9,12 @@ namespace Transformacoes{
 		ESCALA
 	};
 
-	std::vector<std::vector<double>> getMatRotacao(int ang){
+	std::vector<std::vector<double>> getMatRotacao(double ang){
+		double angRad = ang * Util::PI / 180.0;
+
 		std::vector<std::vector<double>> matRotacao = {
-			{cos(ang),-sin(ang)},
-			{sin(ang),cos(ang)}
+			{cos(angRad),-sin(angRad)},
+			{sin(angRad),cos(angRad)}
 		};
 
 		return matRotacao;
@@ -27,22 +29,22 @@ namespace Transformacoes{
 		return matEscala;
 	}
 
-	std::vector<std::vector<double>> transforma(std::vector<std::vector<double>> pontos,TipoTransformacao tipo){
+	// std::vector<std::vector<double>> transforma(std::vector<std::vector<double>> pontos,TipoTransformacao tipo, double argMatriz){
 
-		std::vector<std::vector<double>> matrizEscolhida;
+	// 	std::vector<std::vector<double>> matrizEscolhida;
 
-		switch(tipo){
-			case TipoTransformacao::ROTACAO:
-				matrizEscolhida = getMatRotacao();
-				break;
-			case TipoTransformacao::ESCALA:
-				matrizEscolhida = getMatEscala();
-				break;
+	// 	switch(tipo){
+	// 		case TipoTransformacao::ROTACAO:
+	// 			matrizEscolhida = getMatRotacao(argMatriz);
+	// 			break;
+	// 		case TipoTransformacao::ESCALA:
+	// 			matrizEscolhida = getMatEscala(argMatriz);
+	// 			break;
 			
-		}
+	// 	}
 
-		return Util::multiplicaMatriz(matrizEscolhida,pontos);
-	}
+	// 	return Util::multiplicaMatriz(matrizEscolhida,pontos);
+	// }
 
 
 }
