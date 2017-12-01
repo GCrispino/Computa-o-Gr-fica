@@ -507,27 +507,43 @@ std::vector<std::pair<int, int>> Grid::translacao(Janela &j, int fatorX, int fat
 }
 
 std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
-	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),
-	// std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),
+	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),//pontos dentro da janela
+									 matPontosARotacionar(matPontosDentroJanela.size()),
 									 matPontosRotacionados;
 
-	// std::cout << "Pontos matriz: " << std::endl;
-	// Util::imprimeMatriz(matPontosDentroJanela);
+	for (unsigned int i = 0;i < matPontosDentroJanela[0].size();++i){
+
+		int x = matPontosDentroJanela[0][i], y = matPontosDentroJanela[1][i];
+
+		const double corPreta[] = {0.0, 0.0, 0.0}, *corPonto = this->getCorFrameBuffer(x,y).data();
+
+		if (!Grid::mesmaCor(corPreta, corPonto)){
+			matPontosARotacionar[0].push_back(x);
+			matPontosARotacionar[1].push_back(y);
+		}
+		
+	}
+
+	matPontosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo), matPontosARotacionar);
+
+
+
+	// std::cout << "matriz pontos a rotacionar: " << std::endl;
+	// std::cout << "Tamanho: " << matPontosARotacionar[0].size() << std::endl;
+	// Util::imprimeMatriz(matPontosARotacionar);
 	// std::cout << std::endl;
-	std::vector<std::pair<int,int>> pontosRotacionados(matPontosDentroJanela[0].size());
-
-	// std::cout << "matriz de rotação: " << std::endl;
-	// Util::imprimeMatriz(Transformacoes::getMatRotacao(angulo));
 	// std::cout << std::endl;
-	// std::cout << cos(angulo) << ' ' << sin(angulo) << std::endl;
 
-	matPontosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo),matPontosDentroJanela);
-
+	// std::cout << "matriz pontos rotacionados: " << std::endl;
 	// Util::imprimeMatriz(matPontosRotacionados);
+	// std::cout << std::endl;
+	// std::cout << std::endl;
 
-	for (int i = 0;i < pontosRotacionados.size();++i){
-		int x = matPontosRotacionados[0][i], 
-			y = matPontosRotacionados[1][i];
+	std::vector<std::pair<int, int>> pontosRotacionados(matPontosARotacionar[0].size());
+
+	for (int i = 0;i < matPontosARotacionar[0].size();++i){
+		int x = std::round(matPontosRotacionados[0][i]), 
+			y = std::round(matPontosRotacionados[1][i]);
 
 		pontosRotacionados[i] = std::make_pair(x,y);
 	}
