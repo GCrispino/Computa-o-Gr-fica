@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <GL/glut.h>
 #include "Grid.hpp"
-#include "Util.hpp"
+#include "Transformacoes.hpp"
 // #include "Janela.hpp"
 
 //AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]
@@ -488,4 +488,33 @@ void Grid::preenchimentoRecursivo(int x, int y,const double *corPonto,const doub
 		this->preenchimentoRecursivo(x - 1,y,corPonto,corInicial);
 		this->preenchimentoRecursivo(x,y - 1,corPonto,corInicial);
 	}
+}
+
+std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
+	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),
+	// std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),
+									 matPontosRotacionados;
+
+	// std::cout << "Pontos matriz: " << std::endl;
+	// Util::imprimeMatriz(matPontosDentroJanela);
+	// std::cout << std::endl;
+	std::vector<std::pair<int,int>> pontosRotacionados(matPontosDentroJanela[0].size());
+
+	// std::cout << "matriz de rotação: " << std::endl;
+	// Util::imprimeMatriz(Transformacoes::getMatRotacao(angulo));
+	// std::cout << std::endl;
+	// std::cout << cos(angulo) << ' ' << sin(angulo) << std::endl;
+
+	matPontosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo),matPontosDentroJanela);
+
+	// Util::imprimeMatriz(matPontosRotacionados);
+
+	for (int i = 0;i < pontosRotacionados.size();++i){
+		int x = matPontosRotacionados[0][i], 
+			y = matPontosRotacionados[1][i];
+
+		pontosRotacionados[i] = std::make_pair(x,y);
+	}
+
+	return pontosRotacionados;
 }

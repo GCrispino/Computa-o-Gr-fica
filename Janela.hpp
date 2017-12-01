@@ -25,7 +25,9 @@ class Janela{
 		void atualizaPontos();
 
 		std::vector<std::pair<int, int>> getPontosBorda() const;
+		std::vector<std::vector<double>> getMatrizPontosBorda();
 		std::vector<std::pair<int, int>> getPontosDentro() const;
+		std::vector<std::vector<double>> getMatrizPontosDentro();
 		int getXMin() const;
 		int getYMin() const;
 		int getXMax() const;

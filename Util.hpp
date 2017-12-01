@@ -3,6 +3,8 @@
 
 namespace Util{
 
+	const double PI = 3.14159265;
+
 	template <typename T>
 	void troca(T &x, T &y){
 		T aux = x;
@@ -10,7 +12,7 @@ namespace Util{
 		y = aux;
 	}
 	
-	std::vector<std::vector<double>> multiplicaMatriz(std::vector<std::vector<double>> &m1, std::vector<std::vector<double>> &m2){
+	std::vector<std::vector<double>> multiplicaMatriz(const std::vector<std::vector<double>> &m1, const std::vector<std::vector<double>> &m2){
 		unsigned int nLinhasM1 = m1.size(), nColunasM1 = m1[0].size();
 		unsigned int nLinhasM2 = m2.size(), nColunasM2 = m2[0].size();
 
@@ -33,4 +35,12 @@ namespace Util{
 		return mResult;
 	}
 
+	void imprimeMatriz(const std::vector<std::vector<double>> &matriz)	{
+		for (auto &linha : matriz){
+			for (float coluna : linha)
+				std::cout << coluna << " ";
+
+			std::cout << std::endl;
+		}
+	}
 }

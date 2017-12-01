@@ -205,8 +205,30 @@ std::vector< std::pair<int, int> > Janela::getPontosBorda() const{
 	return this->pontosBorda;
 }
 
+std::vector<std::vector<double>> Janela::getMatrizPontosBorda(){
+	std::vector<std::vector<double>> matrizPontosBorda(2);
+
+	for (std::pair<int,int> ponto: this->pontosBorda){
+		matrizPontosBorda[0].push_back(ponto.first);
+		matrizPontosBorda[1].push_back(ponto.second);
+	}
+
+	return matrizPontosBorda;
+}
+
 std::vector< std::pair<int, int> > Janela::getPontosDentro() const{
 	return this->pontosDentro;
+}
+
+std::vector<std::vector<double>> Janela::getMatrizPontosDentro(){
+	std::vector<std::vector<double>> matrizPontosDentro(2);
+
+	for (std::pair<int,int> ponto: this->pontosDentro){
+		matrizPontosDentro[0].push_back(ponto.first);
+		matrizPontosDentro[1].push_back(ponto.second);
+	}
+
+	return matrizPontosDentro;
 }
 
 int Janela::getXMin() const{
