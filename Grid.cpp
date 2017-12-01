@@ -490,6 +490,22 @@ void Grid::preenchimentoRecursivo(int x, int y,const double *corPonto,const doub
 	}
 }
 
+std::vector<std::pair<int, int>> Grid::translacao(Janela &j, int fatorX, int fatorY){
+
+	std::vector<std::pair<int, int>> pontosDentroJanela = j.getPontosDentro(),
+		pontosTransladados(pontosDentroJanela.size());
+
+	for (int i = 0; i < pontosDentroJanela.size(); ++i){
+		auto &ponto = pontosDentroJanela[i];
+		int x = ponto.first + fatorX,
+			y = ponto.second + fatorY;
+
+		pontosTransladados[i] = std::make_pair(x, y);
+	}
+
+	return pontosTransladados;
+}
+
 std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
 	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),
 	// std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),
