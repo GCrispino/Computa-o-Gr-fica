@@ -227,8 +227,25 @@ std::vector<std::vector<double>> Janela::getMatrizPontosDentro(){
 		matrizPontosDentro[0].push_back(ponto.first);
 		matrizPontosDentro[1].push_back(ponto.second);
 	}
+	
 
 	return matrizPontosDentro;
+}
+
+std::vector<std::vector<double>> Janela::getMatrizTodosPontos(){
+	std::vector<std::vector<double>> matrizPontos(2);
+
+	for (std::pair<int, int> ponto : this->pontosDentro){
+		matrizPontos[0].push_back(ponto.first);
+		matrizPontos[1].push_back(ponto.second);
+	}
+
+	for (std::pair<int, int> ponto : this->pontosBorda){
+		matrizPontos[0].push_back(ponto.first);
+		matrizPontos[1].push_back(ponto.second);
+	}
+
+	return matrizPontos;
 }
 
 int Janela::getXMin() const{

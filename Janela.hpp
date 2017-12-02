@@ -28,6 +28,7 @@ class Janela{
 		std::vector<std::vector<double>> getMatrizPontosBorda();
 		std::vector<std::pair<int, int>> getPontosDentro() const;
 		std::vector<std::vector<double>> getMatrizPontosDentro();
+		std::vector<std::vector<double>> getMatrizTodosPontos();
 		int getXMin() const;
 		int getYMin() const;
 		int getXMax() const;

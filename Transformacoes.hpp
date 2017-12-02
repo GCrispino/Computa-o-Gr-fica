@@ -9,6 +9,18 @@ namespace Transformacoes{
 		ESCALA
 	};
 
+	std::vector<std::vector<double>> convertePontosParaMatPontos(std::vector<std::pair<int,int>> &pontos){
+		std::vector<std::vector<double>> matPontos(2);
+
+		for (auto &ponto: pontos){
+			matPontos[0].push_back(ponto.first);
+			matPontos[1].push_back(ponto.second);
+		}
+
+		return matPontos;
+	}
+
+
 	std::vector<std::vector<double>> getMatRotacao(double ang){
 		double angRad = ang * Util::PI / 180.0;
 
