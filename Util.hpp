@@ -19,6 +19,10 @@ namespace Util{
 		if (nColunasM1 != nLinhasM2)
 			return std::vector<std::vector<double>>{};
 
+		std::cout << "Multiplica matriz!!!!!" << std::endl;
+		std::cout << "m1: " << nLinhasM1 << 'x' << nColunasM1 << "" << std::endl;
+		std::cout << "m2: " << nLinhasM2 << 'x' << nColunasM2 << "" << std::endl;
+
 		std::vector<std::vector<double>> mResult(nLinhasM1);
 
 		for (unsigned int i = 0; i < nLinhasM1; ++i){
@@ -31,6 +35,8 @@ namespace Util{
 				mResult[i].push_back(soma);
 			}
 		}
+
+		std::cout << "mResult: " << mResult.size() << 'x' << mResult[0].size() << "" << std::endl;
 
 		return mResult;
 	}

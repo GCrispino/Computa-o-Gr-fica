@@ -44,8 +44,11 @@ class Grid{
 		void preenchimentoVarredura(const std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> &lados);
 		void preenchimentoRecursivo(int x, int y, const double * corPonto,const double * corInicial);
 
+		std::vector<std::pair<int, int>> translacao(std::vector<std::vector<double>> &pontos, int fatorX, int fatorY);
 		std::vector<std::pair<int, int>> translacao(Janela &j, int fatorX, int fatorY);
-		std::vector<std::pair<int,int>> rotacao(Janela &j,double angulo);
+		std::vector<std::pair<int, int>> rotacao(std::vector<std::vector<double>> &pontos, double angulo, int fatorTranslacaoX, int fatorTranslacaoY);
+		std::vector<std::pair<int, int>> rotacao(Janela &j, double angulo);
+		std::vector<std::pair<int, int>> escala(std::vector<std::vector<double>> &pontos, double fatorX, double fatorY, int fatorTranslacaoX, int fatorTranslacaoY);
 		std::vector<std::pair<int, int>> escala(Janela &j, double fatorX, double fatorY);
 
 		static bool mesmaCor(const double *,const double *);
