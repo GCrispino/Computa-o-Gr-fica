@@ -6,25 +6,24 @@
 #include <GL/glu.h>
 #include "Grid.hpp"
 
-#define ALTURA 1000
-#define LARGURA 1000
+#define ALTURA 800
+#define LARGURA 800
 #define ESPACO_GRID 5
-#define TAMANHO_QUADRADO 20
+#define TAMANHO_QUADRADO 30
 double corPonto[] = {1.0,0.0,0.0}, preto[] = {0.0,0.0,0.0};
 Grid *grid;
 
 std::vector< std::pair<int,int> > quadradosSelecionados;
 std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> lados;
 
-unsigned char modo = '1',tipoTransformacao = 'r';
+unsigned char modo = '1',tipoTransformacao = 'e';
 Janela * janela = nullptr,*janelaSelecao = nullptr;
 bool pintouJanelaSelecao = false;
 int xInicialTransformacao,yInicialTransformacao;
 std::vector<std::pair<int, int>> pontosJanela, tempPontosSelecao, pontosTransformados,pontosPintadosAntesJanela;
 std::vector<std::vector<double>> pontosIniciaisDentroJanela;
 
-void init2D(float r, float g, float b)
-{
+void init2D(float r, float g, float b){
 	glClearColor(r,g,b,0.0);  
 	glMatrixMode (GL_PROJECTION);
 	glOrtho( 0, LARGURA, ALTURA, 0, 0, 1 );
@@ -76,6 +75,14 @@ void apertaTecla(unsigned char key, int x, int y){
 	}
 
 	if (modo != key){
+
+		if (modo == '5'){
+			if (key == 'r' || key == 't' || key == 'e')
+				tipoTransformacao = key;
+			else tipoTransformacao = 'r';
+			return;
+		}
+
 		modo = key;
 
 		return limpaVariaveisGlobais(false);
@@ -101,7 +108,10 @@ void mouseMovimento(int x , int y){
 	if (modo == '5'){
 		int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
 
+
 		if (pintouJanelaSelecao){
+			std::vector<std::pair<int, int>> pontosBordaJanela = janelaSelecao->getPontosBorda();
+			grid->apagaPontos(pontosBordaJanela);
 			std::cout << "Diferença x atual: " << x - xInicialTransformacao << std::endl;
 			std::cout << "Diferença y atual: " << y - yInicialTransformacao << std::endl;
 
@@ -113,11 +123,55 @@ void mouseMovimento(int x , int y){
 						grid->apagaPontos(pontosTransformados);
 					}
 
-					// pontosTransformados = grid->rotacao(*janelaSelecao, -((x - xInicialTransformacao) * 5));
-					pontosTransformados = grid->rotacao(pontosIniciaisDentroJanela, -((y - yInicialTransformacao) * 5), janelaSelecao->getXMin(),janelaSelecao->getYMin());
+					pontosTransformados = grid->rotacao(pontosIniciaisDentroJanela, -((y - yInicialTransformacao) * 5), janelaSelecao->getXMin(), janelaSelecao->getYMin());
 
 					std::cout << "Rotacionou!" << std::endl;
 					for (auto &ponto : pontosTransformados){
+						std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
+						if (ponto.first >= 0 && ponto.second >= 0){
+							std::cout << "PINTA " << std::endl;
+							grid->pintaQuadrado(ponto.first, ponto.second);
+							grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
+						}
+					}
+
+					break;
+				case 't':{
+					if (!pontosTransformados.empty())
+						grid->apagaPontos(pontosTransformados);
+					// pontosTransformados = grid->rotacao(*janelaSelecao, -((x - xInicialTransformacao) * 5));
+					int *pontosIniciais = grid->mapCoordenadaRealParaGrid(xInicialTransformacao,yInicialTransformacao),
+						*pontosAtuais = grid->mapCoordenadaRealParaGrid(x,y);
+
+					pontosTransformados = grid->translacao(pontosIniciaisDentroJanela,
+														   pontosAtuais[0] - pontosIniciais[0],
+														   pontosAtuais[1] - pontosIniciais[1]);
+
+					std::cout << "Rotacionou!" << std::endl;
+					for (auto &ponto : pontosTransformados){
+						std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
+						if (ponto.first >= 0 && ponto.second >= 0){
+							std::cout << "PINTA " << std::endl;
+							grid->pintaQuadrado(ponto.first, ponto.second);
+							grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
+						}
+					}
+
+					break;
+				}
+				case 'e':
+					if (!pontosTransformados.empty()){
+						std::cout << "Não vazio!!!!!!! " << std::endl;
+						grid->apagaPontos(pontosTransformados);
+					}
+					double fatorEscalaX = (double)((x - xInicialTransformacao)) / 100 + 1, fatorEscalaY = (double)((y - yInicialTransformacao)) / 100 + 1;
+					std::cout << "Fator escala: " << std::endl;
+					std::cout << fatorEscalaX << ' ' << fatorEscalaY;
+					pontosTransformados = grid->escala(pontosIniciaisDentroJanela, fatorEscalaX,fatorEscalaY, janelaSelecao->getXMin(), janelaSelecao->getYMin());
+
+					std::cout << "Rotacionou!" << std::endl;
+					for (auto &ponto : pontosTransformados)
+					{
 						std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
 						if (ponto.first >= 0 && ponto.second >= 0){
 							std::cout << "PINTA " << std::endl;
@@ -280,8 +334,9 @@ void mouse(int btn, int state , int x , int y){
 		if (modo == '5'){
 			pintouJanelaSelecao = true;
 
-			auto matPontosJanela = janelaSelecao->getMatrizTodosPontos();
-
+			// auto matPontosJanela = janelaSelecao->getMatrizTodosPontos();
+			auto matPontosJanela = janelaSelecao->getMatrizPontosDentro();
+			
 			pontosIniciaisDentroJanela.clear();
 
 			pontosIniciaisDentroJanela = std::vector<std::vector<double>>(2);
@@ -305,9 +360,6 @@ void mouse(int btn, int state , int x , int y){
 
 int main(int argc,char *argv[]){
 
-	// Janela jan(15,10,25,20);
-
-
 	glutInit(&argc,argv);
 	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize (LARGURA, ALTURA);
@@ -317,27 +369,28 @@ int main(int argc,char *argv[]){
 
 	grid = new Grid(ALTURA,LARGURA,TAMANHO_QUADRADO,ESPACO_GRID,ESPACO_GRID,corPonto);
 
+	// Janela jan(15,10,25,20);
+
+
 	// grid->pintaJanela(jan);
 
 	// std::pair<int, int> p1 = std::make_pair(17, 18), p2 = std::make_pair(21, 13);
 
 	// grid->pintaLinha(p1,p2);
 
-
 	// std::vector<std::pair<int,int>> pontosTranslacao = grid->translacao(jan, 10,7);
-	// std::vector<std::pair<int,int>> pontosEscala = grid->escala(jan, 2,3);
+	// std::vector<std::pair<int,int>> pontosEscala = grid->escala(jan, 1.1,1.1);
 	// std::vector<std::pair<int,int>> pontosRotacao = grid->rotacao(jan, 90.0);
 
 	// grid->apagaPontos(jan.getPontosBorda());
 	// grid->apagaPontos(jan.getPontosDentro());
-	
+
 	// // std::cout << "Rotacionou!" << std::endl;
 	// for (auto &ponto : pontosEscala){
 	// 	std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
 	// 	if (ponto.first >= 0 || ponto.second >= 0)
 	// 		grid->pintaQuadrado(ponto.first,ponto.second);
 	// }
-
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);

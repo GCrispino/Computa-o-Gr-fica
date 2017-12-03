@@ -586,28 +586,19 @@ std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
 }
 
 std::vector<std::pair<int, int>> Grid::escala(std::vector<std::vector<double>> &matPontos, double fatorX, double fatorY, int fatorTranslacaoX, int fatorTranslacaoY){
-	std::vector<std::vector<double>> matPontosTransladadosEscalados;
+	std::vector<std::vector<double>> matPontosTransladados,matPontosTransladadosEscalados;
 	std::vector<std::pair<int, int>> pontosTransladados,pontosEscaladosFinal;
 
 	pontosTransladados = this->translacao(matPontos, -fatorTranslacaoX, -fatorTranslacaoY);
-	matPontos = Transformacoes::convertePontosParaMatPontos(pontosTransladados);
+	matPontosTransladados = Transformacoes::convertePontosParaMatPontos(pontosTransladados);
 
-	matPontosTransladadosEscalados = Util::multiplicaMatriz(Transformacoes::getMatEscala(fatorX, fatorY), matPontos);
+	matPontosTransladadosEscalados = Util::multiplicaMatriz(Transformacoes::getMatEscala(fatorX, fatorY), matPontosTransladados);
 
 	pontosEscaladosFinal = this->translacao(matPontosTransladadosEscalados, fatorTranslacaoX, fatorTranslacaoY);
 
 	return pontosEscaladosFinal;
 
-	// std::vector<std::pair<int, int>> pontosEscalados(matPontos[0].size());
-
-	// for (int i = 0; i < matPontos[0].size(); ++i){
-	// 	int x = std::round(matPontosEscalados[0][i]),
-	// 		y = std::round(matPontosEscalados[1][i]);
-
-	// 	pontosEscalados[i] = std::make_pair(x, y);
-	// }
-
-	// return pontosEscalados;
+	
 }
 
 std::vector<std::pair<int, int>> Grid::escala(Janela &j, double fatorX, double fatorY){
