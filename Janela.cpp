@@ -186,6 +186,7 @@ Janela::getPontoInterseccaoCS(
 }
 
 void Janela::atualizaPontos(){
+	this->pontosBorda = std::vector<std::pair<int,int>>();
 	for (int x = xMin; x <= xMax; ++x){
 		this->pontosBorda.push_back(std::make_pair(x, yMin));
 		this->pontosBorda.push_back(std::make_pair(x, yMax));
@@ -196,6 +197,7 @@ void Janela::atualizaPontos(){
 		this->pontosBorda.push_back(std::make_pair(xMax, y));
 	}
 
+	this->pontosDentro = std::vector<std::pair<int, int>>();
 	for (int x = xMin + 1; x <= xMax - 1; ++x)
 		for (int y = yMin + 1; y <= yMax - 1; ++y)
 			this->pontosDentro.push_back(std::make_pair(x, y));
@@ -231,6 +233,7 @@ std::vector<std::vector<double>> Janela::getMatrizPontosDentro(){
 
 	return matrizPontosDentro;
 }
+
 
 std::vector<std::vector<double>> Janela::getMatrizTodosPontos(){
 	std::vector<std::vector<double>> matrizPontos(2);

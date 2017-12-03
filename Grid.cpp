@@ -143,11 +143,15 @@ void Grid::pintaFrameBuffer(const double cor[],int x,int y){
 void Grid::apagaPontos(const std::vector<std::pair<int, int>> &pontos){
 	double preto[] = {0.0, 0.0, 0.0};
 
-	std::cout << "APaga pontos!!!" << std::endl;
+	// std::cout << "APaga pontos!!!" << std::endl;
 	for (const auto &ponto: pontos){
 		unsigned int x = ponto.first,y = ponto.second;
+		std::cout << "oi" << std::endl;
+		std::cout << "apaga ponto: " << x << ',' << y << std::endl;
+		if (x < 0 || y < 0 || x >= this->frameBuffer.size() || y >= this->frameBuffer[0].size())
+			continue;
 		if (!this->mesmaCor(preto, this->frameBuffer[x][y].data())){
-			std::cout << "ponto: " << x << ',' << y << std::endl;
+			std::cout << "apaga ponto: " << x << ',' << y << std::endl;
 			Quadrado &q = this->getQuadrado(x, y);
 			//muda a cor do quadrado para preto apenas para pintar de volta para preto
 			q.setCor(preto);
@@ -530,17 +534,17 @@ std::vector<std::pair<int, int>> Grid::translacao(Janela &j, int fatorX, int fat
 
 std::vector<std::pair<int, int>> Grid::rotacao(std::vector<std::vector<double>> &matPontos, double angulo, int fatorTranslacaoX, int fatorTranslacaoY)
 {
-	std::vector<std::vector<double>> matPontosTransladadosRotacionados;
+	std::vector<std::vector<double>> matPontosTransladados,matPontosTransladadosRotacionados;
 	std::vector<std::pair<int,int>> pontosTransladados,pontosRotacionadosFinal;
 
 	pontosTransladados = this->translacao(matPontos,-fatorTranslacaoX,-fatorTranslacaoY);
-	matPontos = Transformacoes::convertePontosParaMatPontos(pontosTransladados);
+	matPontosTransladados = Transformacoes::convertePontosParaMatPontos(pontosTransladados);
 
-	// std::cout << "Fatores translação: " << fatorTranslacaoX << ',' << fatorTranslacaoY << std::endl;
+	std::cout << "Fatores translação: " << fatorTranslacaoX << ',' << fatorTranslacaoY << std::endl;
 
-	matPontosTransladadosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo), matPontos);
+	matPontosTransladadosRotacionados = Util::multiplicaMatriz(Transformacoes::getMatRotacao(angulo), matPontosTransladados);
 
-	Util::imprimeMatriz(matPontosTransladadosRotacionados);
+	// Util::imprimeMatriz(matPontosTransladadosRotacionados);
 
 	pontosRotacionadosFinal = this->translacao(matPontosTransladadosRotacionados, fatorTranslacaoX, fatorTranslacaoY);
 
@@ -559,8 +563,8 @@ std::vector<std::pair<int, int>> Grid::rotacao(std::vector<std::vector<double>> 
 
 
 std::vector<std::pair<int, int>> Grid::rotacao(Janela &j,double angulo){
-	// std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizTodosPontos(),//pontos dentro da janela
-	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),//pontos dentro da janela
+	std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosBorda(),//pontos dentro da janela
+	// std::vector<std::vector<double>> matPontosDentroJanela = j.getMatrizPontosDentro(),//pontos dentro da janela
 									 matPontosARotacionar(matPontosDentroJanela.size()),
 									 matPontosRotacionados;
 
