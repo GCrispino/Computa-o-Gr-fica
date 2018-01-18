@@ -67,31 +67,33 @@ std::vector<std::pair<int, int>> Grid::pintaLinha(std::pair<int, int> &primeiroP
 	TrocaReflexao tipoTroca;
 	std::stack<TrocaReflexao> tiposTroca;
 
-	// std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
-	// std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
-	// std::cout << std::endl;
-
 	tiposTroca = Grid::reflexao(primeiroPonto, segundoPonto);
 	pontos = Grid::bresenham(primeiroPonto.first, primeiroPonto.second, segundoPonto.first, segundoPonto.second);
 
-	// std::cout << "Depois da reflexão: " << std::endl;
-	// std::cout << "Primeiro ponto: " << primeiroPonto.first << ',' << primeiroPonto.second << std::endl;
-	// std::cout << "Segundo ponto: " << segundoPonto.first << ',' << segundoPonto.second << std::endl;
-	// std::cout << std::endl;
-
-	// std::cout << "Depois da reflexão inversa: ";
 
 	//reflete cada ponto e os pinta
 	for (unsigned int i = 0; i < pontos.size(); ++i){
 		std::pair<int, int> &ponto = pontos[i];
 		Grid::reflexaoInversa(tiposTroca, ponto.first, ponto.second);
-		// std::cout << "Ponto: " << ponto.first << ',' << ponto.second << " ";
 		this->pintaQuadrado(ponto.first, ponto.second);
 
 		this->pintaFrameBuffer(this->corLinha, ponto.first, ponto.second);
 	}
-	// std::cout << std::endl
-	// 		  << std::endl;
+
+	return pontos;
+}
+
+std::vector<std::pair<int, int>> Grid::pintaCirculo(std::pair<int, int> &centro, int raio){
+	std::vector<std::pair<int, int>>
+		pontos = Grid::pontoMedioCirculo(centro, raio);
+
+	//pinta os pontos
+	for (unsigned int i = 0; i < pontos.size(); ++i)	{
+		std::pair<int, int> &ponto = pontos[i];
+		this->pintaQuadrado(ponto.first, ponto.second);
+
+		this->pintaFrameBuffer(this->corLinha, ponto.first, ponto.second);
+	}
 
 	return pontos;
 }
@@ -288,6 +290,52 @@ std::vector< std::pair<int,int> > Grid::bresenham(int x1, int y1,int x2, int y2)
 	}
 
 	// std::cout << std::endl;
+
+	return pontos;
+}
+
+std::vector<std::pair<int, int>> Grid::pontoMedioCirculo(std::pair<int, int> &centro, int r){
+	std::vector<std::pair<int, int>> pontos;
+
+	int
+		xCentro = centro.first,
+		yCentro = centro.second;
+
+	pontos.push_back(std::make_pair(xCentro + r,yCentro));
+	pontos.push_back(std::make_pair(xCentro, yCentro + r));
+	pontos.push_back(std::make_pair(xCentro - r, yCentro));
+	pontos.push_back(std::make_pair(xCentro,yCentro - r));
+
+
+	int
+		x = 0,
+		y = r,
+		p = 1 - r;
+
+	while (x < y)
+	{
+		++x;
+
+		if (p < 0)
+			p += 2 * x + 3;
+		else{
+			--y;
+			p += 2 * x - 2 * y + 5;
+		}
+
+		std::pair<int, int> pontosQuadrantes[] = {
+			std::make_pair(x + xCentro, y + yCentro),
+			std::make_pair(y + yCentro, x + xCentro),
+			std::make_pair(y + yCentro, -x + xCentro),
+			std::make_pair(x + xCentro, -y + yCentro),
+			std::make_pair(-x + xCentro, -y + yCentro),
+			std::make_pair(-y + yCentro, -x + xCentro),
+			std::make_pair(-y + yCentro, x + xCentro),
+			std::make_pair(-x + xCentro, y + yCentro),
+		};
+
+		pontos.insert(pontos.end(), pontosQuadrantes, pontosQuadrantes + 8);
+	}
 
 	return pontos;
 }

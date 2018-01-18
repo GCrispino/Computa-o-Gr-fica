@@ -26,6 +26,7 @@ class Grid{
 		void pintaQuadrado(int xGrid, int yGrid);
 		void pintaQuadrado(const Quadrado &);
 		std::vector<std::pair<int, int>> pintaLinha(std::pair<int, int> &primeiroPonto, std::pair<int, int> &segundoPonto);
+		std::vector<std::pair<int, int>> pintaCirculo(std::pair<int, int> &centro, int r);
 		void pintaJanela(const Janela &);
 		void pintaFrameBuffer(const double cor[],int x,int y);
 		void apagaPontos(const std::vector<std::pair<int,int>> &pontos);
@@ -55,5 +56,6 @@ class Grid{
 		static std::stack<TrocaReflexao> reflexao(std::pair<int,int> &p1,std::pair<int,int> &p2);
 		static void reflexaoInversa(std::stack<TrocaReflexao> tiposTroca,int &x, int &y);
 		static std::vector<std::pair<int, int>> bresenham(int x1, int y1, int x2, int y2);
+		static std::vector<std::pair<int, int>> pontoMedioCirculo(std::pair<int, int> &centro, int r);
 };
 
