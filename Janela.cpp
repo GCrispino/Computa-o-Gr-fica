@@ -203,6 +203,14 @@ void Janela::atualizaPontos(){
 			this->pontosDentro.push_back(std::make_pair(x, y));
 }
 
+bool Janela::isPontoDentro(const std::pair<int,int> &ponto){
+	bool
+		xDentro = ponto.first >= this->xMin && ponto.first <= this->xMax,
+		yDentro = ponto.second >= this->yMin && ponto.second <= this->yMax;
+
+	return xDentro && yDentro;
+}
+
 std::vector< std::pair<int, int> > Janela::getPontosBorda() const{
 	return this->pontosBorda;
 }

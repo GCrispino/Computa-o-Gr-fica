@@ -24,6 +24,8 @@ class Janela{
 
 		void atualizaPontos();
 
+		bool isPontoDentro(const std::pair<int,int> &);
+
 		std::vector<std::pair<int, int>> getPontosBorda() const;
 		std::vector<std::vector<double>> getMatrizPontosBorda();
 		std::vector<std::pair<int, int>> getPontosDentro() const;

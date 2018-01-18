@@ -20,8 +20,8 @@ unsigned char modo = '1',tipoTransformacao = 'e';
 Janela * janela = nullptr,*janelaSelecao = nullptr;
 bool pintouJanelaSelecao = false;
 int xInicialTransformacao,yInicialTransformacao;
-std::vector<std::pair<int, int>> pontosJanela, tempPontosSelecao, pontosTransformados,pontosPintadosAntesJanela;
-std::vector<std::vector<double>> pontosIniciaisDentroJanela;
+std::vector<std::pair<int, int>> pontosJanela, tempPontosSelecao, pontosTransformados,pontosTransformadosLados,pontosPintadosAntesJanela,pontosPintadosLado;
+std::vector<std::vector<double>> pontosIniciaisDentroJanela, pontosIniciaisLadosDentroJanela;
 
 void init2D(float r, float g, float b){
 	glClearColor(r,g,b,0.0);  
@@ -40,7 +40,7 @@ void display(void)
 
 void reshape(int width,int height){}
 
-void limpaVariaveisGlobais(bool limpaGrid){
+void limpaVariaveisGlobais(bool limpaGrid,bool limpaLados){
 	delete janela;
 	janela = nullptr;
 
@@ -50,8 +50,9 @@ void limpaVariaveisGlobais(bool limpaGrid){
 	if (limpaGrid)
 		grid->limpa();
 
+	if (limpaLados)
+		lados.clear();
 	quadradosSelecionados.clear();
-	lados.clear();
 	pontosJanela.clear();
 
 	glFlush();
@@ -61,7 +62,7 @@ void limpaVariaveisGlobais(bool limpaGrid){
 void apertaTecla(unsigned char key, int x, int y){
 
 	if (key == 'c')
-		return limpaVariaveisGlobais(true);
+		return limpaVariaveisGlobais(true,true);
 
 	if (modo == '3' && key == 'p'){
 		std::cout << "Preenche!" << std::endl;
@@ -85,7 +86,7 @@ void apertaTecla(unsigned char key, int x, int y){
 
 		modo = key;
 
-		return limpaVariaveisGlobais(false);
+		return limpaVariaveisGlobais(false,false);
 	}
 
 }
@@ -101,10 +102,12 @@ void mouseMovimento(int x , int y){
 	if (coordGrid[0] < 0 || coordGrid[1] < 0 || coordGrid[0] > xMaxGrid || coordGrid[1] > yMaxGrid)
 		return;
 
-	std::pair<int, int> p1 = std::make_pair(quadradosSelecionados[0].first, quadradosSelecionados[0].second),
-						p2 = std::make_pair(coordGrid[0], coordGrid[1]),
-						p3,
-						p4;
+	std::pair<int, int> 
+		p1 = std::make_pair(quadradosSelecionados[0].first, quadradosSelecionados[0].second),
+		p2 = std::make_pair(coordGrid[0], coordGrid[1]),
+		p3,
+		p4;
+	
 	if (modo == '5'){
 		int xMin = p1.first, xMax = p2.first, yMin = p1.second, yMax = p2.second;
 
@@ -116,27 +119,43 @@ void mouseMovimento(int x , int y){
 			std::cout << "Diferença y atual: " << y - yInicialTransformacao << std::endl;
 
 			switch(tipoTransformacao){
-				
-				case 'r':
+				case 'r': //rotacao
 					if (!pontosTransformados.empty()){
 						std::cout << "Não vazio!!!!!!! " << std::endl;
 						grid->apagaPontos(pontosTransformados);
 					}
 
-					pontosTransformados = grid->rotacao(pontosIniciaisDentroJanela, -((y - yInicialTransformacao) * 5), janelaSelecao->getXMin(), janelaSelecao->getYMin());
-
-					std::cout << "Rotacionou!" << std::endl;
-					for (auto &ponto : pontosTransformados){
-						std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
-						if (ponto.first >= 0 && ponto.second >= 0){
-							std::cout << "PINTA " << std::endl;
-							grid->pintaQuadrado(ponto.first, ponto.second);
-							grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
-						}
+					if (!pontosPintadosLado.empty()){
+						grid->apagaPontos(pontosPintadosLado);
 					}
+					//===================================================================================
+					pontosTransformados =
+						grid->rotacao(
+							pontosIniciaisLadosDentroJanela,
+							-((y - yInicialTransformacao) * 5),
+							janelaSelecao->getXMin(),
+							janelaSelecao->getYMin());
 
+					for (int i = 0;i < pontosTransformados.size();i += 2){
+						auto
+							&p1 = pontosTransformados[i],
+							&p2 = pontosTransformados[i + 1];
+
+						std::cout << "p1: " << p1.first << ',' << p1.second << std::endl;
+						std::cout << "p2: " << p2.first << ',' << p2.second << std::endl;
+
+						//MODIFICAR COMPARAÇÃO!!
+						/*bool dentroJanela = janelaSelecao->isPontoDentro(p1) && janelaSelecao->isPontoDentro(p2);
+
+						//se pontos não estiverem dentro, não pinta
+						if (!dentroJanela)
+							continue;*/
+
+						//bresenham para pintar linha:
+						pontosPintadosLado = grid->pintaLinha(p1,p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
+					}
 					break;
-				case 't':{
+				case 't':{ //translação
 					if (!pontosTransformados.empty())
 						grid->apagaPontos(pontosTransformados);
 					// pontosTransformados = grid->rotacao(*janelaSelecao, -((x - xInicialTransformacao) * 5));
@@ -159,25 +178,54 @@ void mouseMovimento(int x , int y){
 
 					break;
 				}
-				case 'e':
+				case 'e': //escala
 					if (!pontosTransformados.empty()){
 						std::cout << "Não vazio!!!!!!! " << std::endl;
 						grid->apagaPontos(pontosTransformados);
 					}
+					if (!pontosPintadosLado.empty())
+						grid->apagaPontos(pontosPintadosLado);
 					double fatorEscalaX = (double)((x - xInicialTransformacao)) / 100 + 1, fatorEscalaY = (double)((y - yInicialTransformacao)) / 100 + 1;
-					std::cout << "Fator escala: " << std::endl;
-					std::cout << fatorEscalaX << ' ' << fatorEscalaY;
-					pontosTransformados = grid->escala(pontosIniciaisDentroJanela, fatorEscalaX,fatorEscalaY, janelaSelecao->getXMin(), janelaSelecao->getYMin());
+					// std::cout << "Fator escala: " << std::endl;
+					// std::cout << fatorEscalaX << ' ' << fatorEscalaY;
+					// pontosTransformados = grid->escala(pontosIniciaisDentroJanela, fatorEscalaX,fatorEscalaY, janelaSelecao->getXMin(), janelaSelecao->getYMin());
+					pontosTransformados = 
+						grid->escala(
+							pontosIniciaisLadosDentroJanela, 
+							fatorEscalaX, 
+							fatorEscalaY, 
+							janelaSelecao->getXMin(), 
+							janelaSelecao->getYMin()
+						);
 
-					std::cout << "Rotacionou!" << std::endl;
-					for (auto &ponto : pontosTransformados)
-					{
-						std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
-						if (ponto.first >= 0 && ponto.second >= 0){
-							std::cout << "PINTA " << std::endl;
-							grid->pintaQuadrado(ponto.first, ponto.second);
-							grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
-						}
+					std::cout << "Escala!" << std::endl;
+					// for (auto &ponto : pontosTransformados)
+					// {
+					// 	// std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
+					// 	if (ponto.first >= 0 && ponto.second >= 0){
+					// 		// std::cout << "PINTA " << std::endl;
+					// 		grid->pintaQuadrado(ponto.first, ponto.second);
+					// 		grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
+					// 	}
+					// }
+
+					for (int i = 0; i < pontosTransformados.size(); i += 2){
+						auto
+							&p1 = pontosTransformados[i],
+							&p2 = pontosTransformados[i + 1];
+
+						std::cout << "p1: " << p1.first << ',' << p1.second << std::endl;
+						std::cout << "p2: " << p2.first << ',' << p2.second << std::endl;
+
+						//MODIFICAR COMPARAÇÃO!!
+						/*bool dentroJanela = janelaSelecao->isPontoDentro(p1) && janelaSelecao->isPontoDentro(p2);
+
+						//se pontos não estiverem dentro, não pinta
+						if (!dentroJanela)
+							continue;*/
+
+						//bresenham para pintar linha:
+						pontosPintadosLado = grid->pintaLinha(p1, p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
 					}
 
 					break;
@@ -348,6 +396,26 @@ void mouse(int btn, int state , int x , int y){
 				}
 			}
 
+			pontosIniciaisLadosDentroJanela.clear();
+
+			pontosIniciaisLadosDentroJanela = std::vector<std::vector<double>>(2);
+			for (int i = 0,j = 0; i < lados.size(); ++i){
+				const auto &lado = lados[i];
+				const std::pair<int,int> 
+					&p1 = lado.first,
+					&p2 = lado.second;
+				int 
+					x1 = p1.first, y1 = p1.second,
+					x2 = p2.first, y2 = p2.second;
+				// if (!grid->mesmaCor(preto, grid->getCorFrameBuffer(x, y).data())){
+				pontosIniciaisLadosDentroJanela[0].push_back(x1);
+				pontosIniciaisLadosDentroJanela[1].push_back(y1);
+
+				pontosIniciaisLadosDentroJanela[0].push_back(x2);
+				pontosIniciaisLadosDentroJanela[1].push_back(y2);
+				// }
+			}
+
 			// pontosIniciaisDentroJanela = janelaSelecao->getMatrizTodosPontos();
 
 			quadradosSelecionados.clear();
@@ -368,29 +436,6 @@ int main(int argc,char *argv[]){
 	init2D(0.0,0.0,0.0);
 
 	grid = new Grid(ALTURA,LARGURA,TAMANHO_QUADRADO,ESPACO_GRID,ESPACO_GRID,corPonto);
-
-	// Janela jan(15,10,25,20);
-
-
-	// grid->pintaJanela(jan);
-
-	// std::pair<int, int> p1 = std::make_pair(17, 18), p2 = std::make_pair(21, 13);
-
-	// grid->pintaLinha(p1,p2);
-
-	// std::vector<std::pair<int,int>> pontosTranslacao = grid->translacao(jan, 10,7);
-	// std::vector<std::pair<int,int>> pontosEscala = grid->escala(jan, 1.1,1.1);
-	// std::vector<std::pair<int,int>> pontosRotacao = grid->rotacao(jan, 90.0);
-
-	// grid->apagaPontos(jan.getPontosBorda());
-	// grid->apagaPontos(jan.getPontosDentro());
-
-	// // std::cout << "Rotacionou!" << std::endl;
-	// for (auto &ponto : pontosEscala){
-	// 	std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
-	// 	if (ponto.first >= 0 || ponto.second >= 0)
-	// 		grid->pintaQuadrado(ponto.first,ponto.second);
-	// }
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
