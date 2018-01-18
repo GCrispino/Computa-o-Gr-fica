@@ -88,8 +88,7 @@ std::vector<std::pair<int, int>> Grid::pintaCirculo(std::pair<int, int> &centro,
 		pontos = Grid::pontoMedioCirculo(centro, raio);
 
 	//pinta os pontos
-	for (unsigned int i = 0; i < pontos.size(); ++i)	{
-		std::pair<int, int> &ponto = pontos[i];
+	for (const auto &ponto: pontos){
 		this->pintaQuadrado(ponto.first, ponto.second);
 
 		this->pintaFrameBuffer(this->corLinha, ponto.first, ponto.second);
@@ -312,8 +311,7 @@ std::vector<std::pair<int, int>> Grid::pontoMedioCirculo(std::pair<int, int> &ce
 		y = r,
 		p = 1 - r;
 
-	while (x < y)
-	{
+	while (x < y){
 		++x;
 
 		if (p < 0)
@@ -324,14 +322,14 @@ std::vector<std::pair<int, int>> Grid::pontoMedioCirculo(std::pair<int, int> &ce
 		}
 
 		std::pair<int, int> pontosQuadrantes[] = {
-			std::make_pair(x + xCentro, y + yCentro),
-			std::make_pair(y + yCentro, x + xCentro),
-			std::make_pair(y + yCentro, -x + xCentro),
-			std::make_pair(x + xCentro, -y + yCentro),
-			std::make_pair(-x + xCentro, -y + yCentro),
-			std::make_pair(-y + yCentro, -x + xCentro),
-			std::make_pair(-y + yCentro, x + xCentro),
-			std::make_pair(-x + xCentro, y + yCentro),
+			std::make_pair(xCentro + x, yCentro + y),
+			std::make_pair(xCentro + y, yCentro + x),
+			std::make_pair(xCentro + y, yCentro - x),
+			std::make_pair(xCentro + x, yCentro - y),
+			std::make_pair(xCentro - x, yCentro - y),
+			std::make_pair(xCentro - y, yCentro - x),
+			std::make_pair(xCentro - y, yCentro + x),
+			std::make_pair(xCentro - x, yCentro + y),
 		};
 
 		pontos.insert(pontos.end(), pontosQuadrantes, pontosQuadrantes + 8);
@@ -409,12 +407,6 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 		//obtém lados que possuem interseccao com o ponto atual
 		std::vector<std::pair<std::pair<int, int>, std::pair<int, int>>> ladosInterseccaoPonto = this->getLados(yVarredura, lados,ladosMinMax);
 
-		std::cout << "LadosMinMax: " << ladosMinMax.size() << std::endl;
-		for (const auto & ponto: ladosMinMax)
-			std::cout <<"Ponto: " << ponto.first.first << ',' << ponto.first.second << std::endl;
-
-		std::cout << "Y varredura: " << yVarredura << std::endl;
-		std::cout << "Pontos de intersecção: " << std::endl;
 		for (const std::pair<std::pair<int, int>, std::pair<int, int>> &lado: ladosInterseccaoPonto){
 			std::pair<int,int> pontoYMin = this->getPontoYMin(lado);
 
@@ -428,17 +420,7 @@ void Grid::preenchimentoVarredura(const std::vector< std::pair< std::pair<int, i
 			}
 
 			int xInterseccao = (1 / m) *  (yVarredura - yMin) + xYMin;
-			std::cout << "\tx1 = " << x1 << " y1 = " << y1 << ", x2 = " << x2 << ", y2 = " << y2 << std::endl;
-			std::cout << "\tm = " << m << std::endl;
-			std::cout << "\tyMin = " << yMin << std::endl;
-			std::cout << "\txYMin = " << xYMin << std::endl;
-
-			std::cout << "\tlado: " << std::endl;
-
-			std::cout << "\t\tPrimeiro ponto: " << lado.first.first << ',' << lado.first.second << std::endl;
-			std::cout << "\t\tSegundo ponto: " << lado.second.first << ',' << lado.second.second << std::endl;
-
-			std::cout << "\txInterseccao = " << xInterseccao << std::endl;
+			
 			pontosParaPintar.push_back(std::make_pair(xInterseccao,yVarredura));
 		}
 

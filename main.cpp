@@ -302,6 +302,20 @@ void mouse(int btn, int state , int x , int y){
 			std::cout << "insere lados!" << std::endl;
 			lados.push_back(std::make_pair(primeiroPonto,segundoPonto));
 
+			if (modo == '6'){
+				int
+					diffSegundoPontoX = abs(abs(segundoPonto.first) - abs(primeiroPonto.first)),
+					diffSegundoPontoY = abs(abs(segundoPonto.second) - abs(primeiroPonto.second)),
+					raioCirculo = 
+						diffSegundoPontoX > diffSegundoPontoY ? diffSegundoPontoX : diffSegundoPontoY;
+
+				grid->apagaPontos(std::vector<std::pair<int,int>>{primeiroPonto,segundoPonto});
+				grid->pintaCirculo(primeiroPonto, raioCirculo);
+
+				quadradosSelecionados.clear();
+				return ;
+			}
+
 			if (modo == '4'){
 				if (!janela){
 					//pinta a janela
@@ -351,7 +365,6 @@ void mouse(int btn, int state , int x , int y){
 
 
 					if (primeiroPonto == pontoForaTeste && segundoPonto == pontoForaTeste){
-						std::cout << "Ta fora!" << std::endl;
 						quadradosSelecionados.clear();
 						return;
 					}
