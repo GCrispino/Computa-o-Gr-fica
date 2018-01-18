@@ -152,7 +152,8 @@ void mouseMovimento(int x , int y){
 							continue;*/
 
 						//bresenham para pintar linha:
-						pontosPintadosLado = grid->pintaLinha(p1,p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
+						auto pontosPintados = grid->pintaLinha(p1,p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
+						pontosPintadosLado.insert(pontosPintadosLado.end(),pontosPintados.begin(),pontosPintados.end());
 					}
 					break;
 				case 't':{ //translação
@@ -199,15 +200,6 @@ void mouseMovimento(int x , int y){
 						);
 
 					std::cout << "Escala!" << std::endl;
-					// for (auto &ponto : pontosTransformados)
-					// {
-					// 	// std::cout << "ponto: " << ponto.first << ',' << ponto.second << std::endl;
-					// 	if (ponto.first >= 0 && ponto.second >= 0){
-					// 		// std::cout << "PINTA " << std::endl;
-					// 		grid->pintaQuadrado(ponto.first, ponto.second);
-					// 		grid->pintaFrameBuffer(corPonto, ponto.first, ponto.second);
-					// 	}
-					// }
 
 					for (int i = 0; i < pontosTransformados.size(); i += 2){
 						auto
@@ -225,7 +217,8 @@ void mouseMovimento(int x , int y){
 							continue;*/
 
 						//bresenham para pintar linha:
-						pontosPintadosLado = grid->pintaLinha(p1, p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
+						auto pontosPintados = grid->pintaLinha(p1, p2); //TESTAR PORQUE PASSAGEM POR REFERÊNCIA PODE CAUSAR PROBLEMAS
+						pontosPintadosLado.insert(pontosPintadosLado.end(), pontosPintados.begin(), pontosPintados.end());
 					}
 
 					break;
