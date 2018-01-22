@@ -9,7 +9,7 @@
 #define ALTURA 800
 #define LARGURA 800
 #define ESPACO_GRID 5
-#define TAMANHO_QUADRADO 30
+#define TAMANHO_QUADRADO 20
 double corPonto[] = {1.0,0.0,0.0}, preto[] = {0.0,0.0,0.0};
 Grid *grid;
 
@@ -78,10 +78,10 @@ void apertaTecla(unsigned char key, int x, int y){
 	if (modo != key){
 
 		if (modo == '5'){
-			if (key == 'r' || key == 't' || key == 'e')
+			if (key == 'r' || key == 't' || key == 'e'){
 				tipoTransformacao = key;
-			else tipoTransformacao = 'r';
-			return;
+				return ;
+			}
 		}
 
 		modo = key;

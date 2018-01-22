@@ -8,7 +8,6 @@
 // #include "Janela.hpp"
 
 //AJEITAR IMPLEMENTAÇÃO DO FRAMEBUFFER -> NÃO DEVE SER [ALTURA][LARGURA]
-//AJEITAR pintaQuadrado -> PODE SER REDUZIDA
 //FUNÇÃO criaLinhaQuadrado PODE RETORNAR LINHA
 //ADICIONAR CHECAGEM SE PONTO FORA DO GRID FOR ACESSADO
 
@@ -26,12 +25,13 @@ Grid::Grid(int altura, int largura,int tamanhoQuadrados,int xInicial,int yInicia
 		this->frameBuffer.push_back(linha);
 	}
 
+	std::cout << std::endl;
 	for (int xGrid = 0,xReal = this->yInicial;xReal + this->tamanhoQuadrados < this->altura;xReal += this->tamanhoQuadrados,++xGrid){
 		std::vector<Quadrado> linha;
 		this->quadrados.push_back(linha);
 		this->criaLinhaQuadrados(xGrid,xReal);
 	}
-	std::cout << "Acabou!" << std::endl;
+
 
 }
 
@@ -46,7 +46,6 @@ Grid::Grid(const Grid &g)
 void Grid::criaLinhaQuadrados(int xGrid,int xReal){
 
 	for (int yReal = this->xInicial;yReal + this->tamanhoQuadrados < this->largura; yReal += this->tamanhoQuadrados){
-		// std::cout << "Quadrado " << x << "," << yGrid << std::endl;
 		this->quadrados[xGrid].push_back(Quadrado(xReal,yReal,this->tamanhoQuadrados,this->corLinha));
 	}
 }
@@ -510,17 +509,19 @@ void Grid::preenchimentoRecursivo(int x, int y,const double *corPonto,const doub
 	//se não tiver pintado com uma das cores, pinta
 	if (
 		mesmaCor(this->frameBuffer[x][y].data(), corInicial)
-		&& x < (this->largura / this->tamanhoQuadrados) && x >= 0 && y < (this->altura / this->tamanhoQuadrados) && y >= 0
+		&& x < ((this->largura - this->xInicial) / this->tamanhoQuadrados) && x >= 0 && y < ((this->altura - this->yInicial) / this->tamanhoQuadrados) && y >= 0
 	){
+
 		//pinta o restante
 		this->pintaFrameBuffer(corPonto,x,y);
 		this->pintaQuadrado(x,y);
-		
 
-		this->preenchimentoRecursivo(x + 1,y,corPonto,corInicial);
-		this->preenchimentoRecursivo(x,y + 1,corPonto,corInicial);
-		this->preenchimentoRecursivo(x - 1,y,corPonto,corInicial);
-		this->preenchimentoRecursivo(x,y - 1,corPonto,corInicial);
+		// if (x < (this->largura / this->tamanhoQuadrados) - 1 && x >= 0 && y < (this->altura / this->tamanhoQuadrados) - 1 && y >= 0){
+			this->preenchimentoRecursivo(x + 1, y, corPonto, corInicial);
+			this->preenchimentoRecursivo(x,y + 1,corPonto,corInicial);
+			this->preenchimentoRecursivo(x - 1,y,corPonto,corInicial);
+			this->preenchimentoRecursivo(x,y - 1,corPonto,corInicial);
+		// }
 	}
 }
 
